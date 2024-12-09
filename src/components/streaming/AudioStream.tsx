@@ -3,11 +3,18 @@ import { useState, useEffect, useRef } from 'react';
 interface AudioStreamProps {
   streamUrl: string;
   autoPlay?: boolean;
+  volume?: number;
 }
 
-const AudioStream: React.FC<AudioStreamProps> = ({ streamUrl, autoPlay }) => {
+const AudioStream: React.FC<AudioStreamProps> = ({ streamUrl, autoPlay, volume = 1.0 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   useEffect(() => {
     if (audioRef.current && autoPlay) {
@@ -41,7 +48,7 @@ const AudioStream: React.FC<AudioStreamProps> = ({ streamUrl, autoPlay }) => {
       />
       <button 
         onClick={togglePlay}
-        className={`px-6 py-3 rounded-full text-white font-medium transition-colors duration-200 ${
+        className={`w-24 px-6 py-3 rounded-full text-white font-medium transition-colors duration-200 ${
           isPlaying 
             ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/50' 
             : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/50'

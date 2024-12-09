@@ -5,10 +5,11 @@ import AudioStream from "./components/streaming/AudioStream";
 
 function App() {
   const [username, setUsername] = useState<string>("");
+  const [isRecording, setIsRecording] = useState<boolean>(false);
 
-  const handleRecordingComplete = async (audioBlob: Blob) => {
-    if (!username.trim()) {
-      alert("Please enter a username first");
+  const handleRecordingComplete = async (audioBlob: Blob | null) => {
+    setIsRecording(false);
+    if (!audioBlob) {
       return;
     }
 
@@ -16,6 +17,9 @@ function App() {
     formData.append("audio", audioBlob);
     formData.append("username", username);
 
+    // const audioUrl = URL.createObjectURL(audioBlob);
+    // const audio = new Audio(audioUrl);
+    // audio.play();
     try {
       //TODO: upload to server
       // const response = await fetch("/api/upload", {
@@ -34,6 +38,10 @@ function App() {
     }
   };
 
+  const startRecording = () => {
+    setIsRecording(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 pt-8 flex justify-center">
@@ -43,6 +51,7 @@ function App() {
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
           <AudioStream
             streamUrl="https://audio-edge-5bkfj.fra.h.radiomast.io/ref-128k-mp3-stereo"
+            volume={isRecording ? 0.03 : 1.0}
           />
         </div>
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
@@ -50,6 +59,7 @@ function App() {
             <div className="flex justify-center">
               <RecordButton
                 onRecordingComplete={handleRecordingComplete}
+                onStartRecording={startRecording}
               />
             </div> :
             <UsernameInput onConfirmUsername={setUsername} />}
