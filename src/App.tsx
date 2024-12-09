@@ -1,6 +1,7 @@
 import UsernameInput from "./components/login/UsernameInput";
 import RecordButton from "./components/recording/RecordButton";
 import { useState } from "react";
+import AudioStream from "./components/streaming/AudioStream";
 
 function App() {
   const [username, setUsername] = useState<string>("");
@@ -38,17 +39,19 @@ function App() {
       <h1 className="text-3xl font-bold text-gray-800 mb-8 pt-8 flex justify-center">
         ConvinceMe
       </h1>
-      <div className="flex items-center justify-center">
-
+      <div className="flex flex-col items-center space-y-4">
+        <div className="bg-white p-8 rounded-lg shadow-md w-96">
+          <AudioStream
+            streamUrl="https://audio-edge-5bkfj.fra.h.radiomast.io/ref-128k-mp3-stereo"
+          />
+        </div>
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
           {username ?
-            <>
-              <div className="flex justify-center">
-                <RecordButton
-                  onRecordingComplete={handleRecordingComplete}
-                />
-              </div>
-            </> :
+            <div className="flex justify-center">
+              <RecordButton
+                onRecordingComplete={handleRecordingComplete}
+              />
+            </div> :
             <UsernameInput onConfirmUsername={setUsername} />}
         </div>
       </div>
