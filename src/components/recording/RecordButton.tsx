@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { LiveAudioVisualizer } from 'react-audio-visualize';
 
 interface RecordButtonProps {
   onRecordingComplete: (audioBlob: Blob | null) => void;
@@ -49,15 +50,22 @@ export default function RecordButton({ onRecordingComplete, onStartRecording }: 
   };
 
   return (
-    <button
-      onClick={isRecording ? stopRecording : startRecording}
-      className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-medium transition-colors duration-200 ${
-        isRecording 
-          ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/50' 
+    <>
+      <button
+        onClick={isRecording ? stopRecording : startRecording}
+        className={`w-24 h-24 rounded-full flex flex-col items-center justify-center text-white font-medium transition-colors duration-200 ${isRecording
+          ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/50'
           : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/50'
-      } shadow-lg`}
-    >
-      {isRecording ? 'Stop' : 'Record'}
-    </button>
+          } shadow-lg`}
+      >
+        {mediaRecorderRef.current && isRecording ? (
+          <LiveAudioVisualizer
+            mediaRecorder={mediaRecorderRef.current}
+            width={80}
+            height={40}
+          />
+        ) : <div>Record</div>}
+      </button>
+    </>
   );
 }

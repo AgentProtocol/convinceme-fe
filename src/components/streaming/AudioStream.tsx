@@ -38,7 +38,7 @@ const AudioStream: React.FC<AudioStreamProps> = ({ streamUrl, autoPlay, volume =
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex flex-col items-center">
       <audio
         ref={audioRef}
         src={streamUrl}
