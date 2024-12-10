@@ -1,7 +1,8 @@
-import UsernameInput from "./components/login/UsernameInput";
-import RecordButton from "./components/recording/RecordButton";
+import UsernameInput from "./components/UsernameInput";
+import RecordButton from "./components/RecordButton";
 import { useState } from "react";
-import AudioStream from "./components/streaming/AudioStream";
+import AudioStream from "./components/AudioStream";
+import TranscriptList from "./components/TranscriptList";
 
 function App() {
   const [username, setUsername] = useState<string>("");
@@ -48,7 +49,8 @@ function App() {
         ConvinceMe
       </h1>
       <div className="flex flex-col items-center space-y-4">
-        <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <div className="bg-white pb-4 rounded-lg shadow-md w-96">
+          <TranscriptList />
           <AudioStream
             streamUrl="https://audio-edge-5bkfj.fra.h.radiomast.io/ref-128k-mp3-stereo"
             volume={isRecording ? 0.03 : 1.0}
