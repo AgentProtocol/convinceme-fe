@@ -3,6 +3,7 @@ import RecordButton from "./components/RecordButton";
 import { useState } from "react";
 import AudioStream from "./components/AudioStream";
 import TranscriptList from "./components/TranscriptList";
+import WelcomeModal from "./components/WelcomeModal";
 
 function App() {
   const [username, setUsername] = useState<string>("");
@@ -45,6 +46,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      <WelcomeModal />
       <h1 className="text-3xl font-bold text-gray-800 mb-8 pt-8 flex justify-center">
         ConvinceMe
       </h1>
