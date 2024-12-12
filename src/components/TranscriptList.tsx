@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import websocketService from '../services/websocketService';
 
-interface Transcript {
+export interface Transcript {
   id: number;
   transcript: string;
   username: string;
@@ -11,38 +12,22 @@ export default function TranscriptList() {
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
 
   useEffect(() => {
-    setTranscripts(demoTranscripts.reverse());
-    // TODO:
-    // // Fetch initial transcripts
-    // const fetchTranscripts = async () => {
-    //   try {
-    //     const response = await fetch('TODO/api/transcripts');
-    //     const data = await response.json();
-    //     setTranscripts(data);
-    //   } catch (error) {
-    //     console.error('Failed to fetch transcripts:', error);
-    //   }
-    // };
+    const handleNewTranscript = (newTranscript: Transcript) => {
+      setTranscripts(prev => [...prev, newTranscript]);
+    };
 
-    // fetchTranscripts();
+    // Subscribe to transcript events
+    websocketService.on('transcript', handleNewTranscript);
 
-    // // Set up WebSocket connection
-    // const ws = new WebSocket('ws://your-websocket-url');
-
-    // ws.onmessage = (event) => {
-    //   const newTranscript = JSON.parse(event.data);
-    //   setTranscripts(prev => [...prev, newTranscript]);
-    // };
-
-    // // Cleanup WebSocket connection
-    // return () => {
-    //   ws.close();
-    // };
+    return () => {
+      // Cleanup subscription
+      websocketService.off('transcript', handleNewTranscript);
+    };
   }, []);
 
   return (
     <div className="max-w-2xl mx-auto mb-4">
-      <div className="max-h-[40vh] overflow-y-auto flex flex-col-reverse">
+      <div className="max-h-[30vh] min-h-[30vh] overflow-y-auto flex flex-col-reverse">
         {[...transcripts].reverse().map((transcript) => (
           <div key={transcript.id} className="p-4 text-center">
             <div className="mb-2 font-semibold text-gray-700">
