@@ -1,90 +1,104 @@
 import { useState, useEffect, useRef } from 'react';
-import websocketService from '../services/websocketService';
+import Hls from 'hls.js';
 
 interface AudioStreamProps {
+  streamUrl: string;
   volume?: number;
 }
 
-const AudioStream: React.FC<AudioStreamProps> = ({ volume = 1.0 }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const isProcessingRef = useRef(false);
-  const audioQueueRef = useRef<Blob[]>([]);
+const AudioStream: React.FC<AudioStreamProps> = ({ streamUrl, volume = 1.0 }) => {
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [status, setStatus] = useState('Idle');
+  const audioPlayerRef = useRef<HTMLAudioElement>(null);
+  const hlsRef = useRef<Hls | null>(null);
+
+  const initializeHLS = () => {
+    if (!audioPlayerRef.current || !isEnabled) return;
+
+    setStatus('Loading stream...');
+
+    // Native HLS support in Safari
+    if (audioPlayerRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+      audioPlayerRef.current.src = streamUrl;
+      audioPlayerRef.current.volume = volume;
+      audioPlayerRef.current.play().catch(error => {
+        console.error('Native HLS playback error:', error);
+        setStatus('Playback error');
+      });
+    }
+    // Use HLS.js for other browsers
+    else if (Hls.isSupported()) {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+      }
+
+      const hls = new Hls();
+      hlsRef.current = hls;
+      hls.loadSource(streamUrl);
+      hls.attachMedia(audioPlayerRef.current);
+      
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        audioPlayerRef.current!.volume = volume;
+        audioPlayerRef.current!.play().catch(error => {
+          console.error('HLS.js playback error:', error);
+          setStatus('Playback error');
+        });
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error('HLS.js error:', data);
+        if (data.fatal) {
+          setStatus('Stream error');
+        }
+      });
+    }
+  };
 
   useEffect(() => {
-    if (!isPlaying) return;
-
-    audioContextRef.current = new AudioContext();
-    gainNodeRef.current = audioContextRef.current.createGain();
-    gainNodeRef.current.connect(audioContextRef.current.destination);
-    gainNodeRef.current.gain.value = volume;
-
-    const playNextChunk = async () => {
-      if (!isPlaying || audioQueueRef.current.length === 0 || isProcessingRef.current) return;
-
-      isProcessingRef.current = true;
-      const chunk = audioQueueRef.current.shift()!;
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      try {
-        const blob = new Blob([chunk], { type: 'audio/webm; codecs="opus"' });
-        const arrayBuffer = await blob.arrayBuffer();
-        const audioBuffer = await audioContextRef.current!.decodeAudioData(arrayBuffer);
-        
-        const sourceNode = audioContextRef.current!.createBufferSource();
-        sourceNode.buffer = audioBuffer;
-        sourceNode.connect(gainNodeRef.current!);
-        
-        sourceNode.onended = () => {
-          isProcessingRef.current = false;
-          playNextChunk();
-        };
-
-        sourceNode.start();
-      } catch (error) {
-        console.error("Error playing audio chunk:", error);
-        isProcessingRef.current = false;
-        playNextChunk();
+    if (isEnabled) {
+      initializeHLS();
+    } else {
+      // Stop playback when disabled
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.pause();
+        setStatus('Idle');
       }
-    };
-
-    const handleAudioStream = async (audioBlob: Blob) => {
-      if (!isPlaying) return;
-      audioQueueRef.current.push(audioBlob);
-      
-      if (!isProcessingRef.current) {
-        playNextChunk();
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
       }
-    };
+    }
+  }, [isEnabled, streamUrl, volume]);
 
-    websocketService.on('audioStream', handleAudioStream);
-
+  // Clean up HLS instance on unmount
+  useEffect(() => {
     return () => {
-      websocketService.off('audioStream', handleAudioStream);
-      audioContextRef.current?.close();
-      audioQueueRef.current = [];
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+      }
     };
-  }, [isPlaying, volume]);
+  }, []);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const toggleAudioStream = () => {
+    setIsEnabled(!isEnabled);
   };
 
   return (
     <div className="flex flex-col items-center">
+      <audio ref={audioPlayerRef} style={{ display: 'none' }} />
+      <div className="text-sm text-gray-600 mb-2">{status}</div>
       <button 
-        onClick={togglePlay}
+        onClick={toggleAudioStream}
         className={`w-24 px-6 py-3 rounded-full text-white font-medium transition-colors duration-200 ${
-          isPlaying 
+          isEnabled 
             ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/50' 
             : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/50'
         } shadow-lg`}
       >
-        {isPlaying ? 'Pause' : 'Play'}
+        {isEnabled ? 'Stop' : 'Play'}
       </button>
     </div>
   );
 };
 
-export default AudioStream; 
+export default AudioStream;

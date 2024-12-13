@@ -56,6 +56,7 @@ function App() {
         <div className="bg-white pb-4 rounded-lg shadow-md w-96">
           <TranscriptList />
           <AudioStream
+            streamUrl={'http://localhost:8080/hls/playlist.m3u8'}
             volume={isRecording ? 0.03 : 1.0}
           />
         </div>

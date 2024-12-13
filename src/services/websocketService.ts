@@ -31,27 +31,25 @@ class WebSocketService extends EventEmitter {
 
       this.socket.onmessage = async (event) => {
         console.log("Received message:", event.data);
-        if (event.data instanceof Blob) {
-          this.emit('audioStream', event.data);
-        } else {
-          try {
-            const data = JSON.parse(event.data);
-            if (data.type === 'transcript') {
-              this.emit('transcript', data.transcript);
-            } else if (data.type === 'text') {
-              //This is temporary
-              this.emit('transcript', {
-                id: Date.now(),
-                transcript: data.message,
-                username: data.agent,
-                createdAt: new Date()
-              });
-            } else if (data.type === 'audio_end') {
-              this.emit('audio_end');
-            }
-          } catch (error) {
-            console.error('Error parsing message:', error);
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'audio') {
+            this.emit('audioStream', {
+              audioPath: data.audioPath,
+              agent: data.agent
+            });
+          } else if (data.type === 'transcript') {
+            this.emit('transcript', data.transcript);
+          } else if (data.type === 'text') {
+            this.emit('transcript', {
+              id: Date.now(),
+              transcript: data.message,
+              username: data.agent,
+              createdAt: new Date()
+            });
           }
+        } catch (error) {
+          console.error('Error parsing message:', error);
         }
       };
 
