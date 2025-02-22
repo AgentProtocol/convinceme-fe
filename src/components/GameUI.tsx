@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScoreBar from './ScoreBar';
 import ArgumentsList, { Argument } from './ArgumentsList';
 import ArgumentInput from './ArgumentInput';
+import LoginButton from './LoginButton';
 import { useWebSocket } from '../contexts/WebSocketContext';
-
+import { useAccount } from "@starknet-react/core";
 interface GameUIProps {
   side1: string;
   side2: string;
@@ -71,9 +72,9 @@ const calculateInitialScores = (args: Argument[], side1: string) => {
 
 export default function GameUI({ side1, side2 }: GameUIProps) {
   const initialScores = calculateInitialScores(demoArguments, side1);
-  const [username, setUsername] = useState<string>("");
   const [side1Score, setSide1Score] = useState(initialScores.side1);
   const [side2Score, setSide2Score] = useState(initialScores.side2);
+  const { address } = useAccount();
   // const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
   const [debateArguments, setDebateArguments] = useState<Argument[]>(demoArguments);
   const { sendMessage } = useWebSocket();
@@ -87,10 +88,10 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
   // }, []);
 
   const handleSendArgument = (argument: string) => {
-    if (!username || !argument.trim()) return;
+    if (!address || !argument.trim()) return;
     
     try {
-      sendMessage(argument, "debate", username);
+      sendMessage(argument, "debate", address);
       
       // For demo: Add the argument locally with a random score
       const newArgument: Argument = {
@@ -99,7 +100,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
         score: Math.floor(Math.random() * 50) + 30, // Random score between 30-80
         side: Math.random() > 0.5 ? side1 : side2, // Randomly assign to a side
         timestamp: new Date(),
-        userAddress: "0x1234...5678" // In real app, this would come from wallet connection
+        userAddress: address
       };
       
       setDebateArguments(prev => [...prev, newArgument]);
@@ -145,22 +146,8 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
           </div>
 
           <div className="p-4 bg-gray-50 border-t shrink-0">
-            {!username ? (
-              <div className="flex flex-col items-center py-2">
-                <button
-                  onClick={() => setUsername("demo-user")}
-                  className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-bold text-white transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span className="absolute inset-0 w-full h-full rounded-lg bg-gradient-to-r from-blue-500 to-red-500"></span>
-                  <span className="relative flex items-center gap-2">
-                    Login to Participate
-                    <svg className="w-5 h-5 ml-2 transition-transform duration-200 ease-in-out group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </span>
-                </button>
-                <p className="mt-3 text-sm text-gray-600">Connect your wallet to join the debate</p>
-              </div>
+            {!address ? (
+              <LoginButton />
             ) : (
               <ArgumentInput onSubmit={handleSendArgument} />
             )}
