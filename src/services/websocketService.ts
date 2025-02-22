@@ -48,7 +48,7 @@ class WebSocketService extends EventEmitter {
     }
 
     try {
-      this.socket = new WebSocket('ws://localhost:3000/ws/conversation');
+      this.socket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL + '/ws/conversation');
 
       this.socket.onopen = () => {
         console.log('Connected to WebSocket');
@@ -133,8 +133,7 @@ class WebSocketService extends EventEmitter {
       type: 'text',
       message: message,
       topic: topic,
-      mode: 'audo', // Request text-only response
-      both_agents: false // Request only one agent to respond
+      mode: 'audio',
     };
 
     try {

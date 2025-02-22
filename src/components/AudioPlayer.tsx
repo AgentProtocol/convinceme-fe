@@ -42,7 +42,7 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
     setStatus(`Loading ${nextAudio.agent}'s response...`);
 
     // Add timestamp to URL to prevent caching
-    const url = `${nextAudio.audioPath}?t=${Date.now()}`;
+    const url = `${import.meta.env.VITE_API_URL}${nextAudio.audioPath}?t=${Date.now()}`;
     audioRef.current.src = url;
     audioRef.current.load();
 
