@@ -10,10 +10,9 @@ interface AudioMessage {
 interface AudioPlayerProps {
   side1: string;
   side2: string;
-  onPlaybackChange: (isPlaying: boolean, speakingSide: string) => void;
 }
 
-export default function AudioPlayer({ side1, side2, onPlaybackChange }: AudioPlayerProps) {
+export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [status, setStatus] = useState('Idle');
   const audioQueue = useRef<AudioMessage[]>([]);
@@ -47,6 +46,8 @@ export default function AudioPlayer({ side1, side2, onPlaybackChange }: AudioPla
     audioRef.current.src = url;
     audioRef.current.load();
 
+    setCurrentSpeaker(nextAudio.agent);
+
     audioRef.current.oncanplaythrough = () => {
       setStatus(`Playing ${nextAudio.agent}'s response...`);
       audioRef.current?.play().catch(error => {
@@ -73,17 +74,6 @@ export default function AudioPlayer({ side1, side2, onPlaybackChange }: AudioPla
       playNextInQueue();
     };
   };
-
-  // Simulate speaker changes (in a real app, this would come from your audio processing logic)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const nextSpeaker = currentSpeaker === side1 ? side2 : side1;
-      setCurrentSpeaker(nextSpeaker);
-      onPlaybackChange(true, nextSpeaker);
-    }, 5000); // Switch every 5 seconds for demo
-
-    return () => clearInterval(interval);
-  }, [currentSpeaker, onPlaybackChange, side1, side2]);
 
   return (
     <div className="flex items-center justify-between w-full">

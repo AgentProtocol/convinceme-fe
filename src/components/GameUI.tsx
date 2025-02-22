@@ -55,36 +55,36 @@ const demoArguments: Argument[] = [
 ];
 
 // Calculate initial scores based on arguments
-const calculateInitialScores = (args: Argument[]) => {
+const calculateInitialScores = (args: Argument[], side1: string) => {
   return args.reduce(
     (scores, arg) => {
-      if (arg.side === "Bear") {
-        scores.bear += arg.score;
+      if (arg.side === side1) {
+        scores.side1 += arg.score;
       } else {
-        scores.tiger += arg.score;
+        scores.side2 += arg.score;
       }
       return scores;
     },
-    { bear: 500, tiger: 500 }
+    { side1: 500, side2: 500 }
   );
 };
 
 export default function GameUI({ side1, side2 }: GameUIProps) {
-  const initialScores = calculateInitialScores(demoArguments);
+  const initialScores = calculateInitialScores(demoArguments, side1);
   const [username, setUsername] = useState<string>("");
-  const [side1Score, setSide1Score] = useState(initialScores.bear);
-  const [side2Score, setSide2Score] = useState(initialScores.tiger);
-  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
+  const [side1Score, setSide1Score] = useState(initialScores.side1);
+  const [side2Score, setSide2Score] = useState(initialScores.side2);
+  // const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
   const [debateArguments, setDebateArguments] = useState<Argument[]>(demoArguments);
   const { sendMessage } = useWebSocket();
 
   // Timer countdown
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => Math.max(0, prev - 1));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setTimeLeft((prev) => Math.max(0, prev - 1));
+  //   }, 1000);
+  //   return () => clearInterval(timer);
+  // }, []);
 
   const handleSendArgument = (argument: string) => {
     if (!username || !argument.trim()) return;
@@ -115,19 +115,12 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
     }
   };
 
-  const handleAudioPlaybackChange = (isPlaying: boolean, speakingSide: string) => {
-    // We don't need to track the active speaker in GameUI anymore
-    // The AudioPlayer component handles this internally
-  };
-
   return (
     <div className="h-full max-w-5xl mx-auto px-4 flex flex-col">
       <ScoreBar
-        side1={side1}
-        side2={side2}
         side1Score={side1Score}
         side2Score={side2Score}
-        timeLeft={timeLeft}
+        // timeLeft={timeLeft}
         className="shrink-0"
       />
 
@@ -138,7 +131,6 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
           <AudioPlayer 
             side1={side1}
             side2={side2}
-            onPlaybackChange={handleAudioPlaybackChange}
           />
         </div>
 
@@ -159,8 +151,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
                   onClick={() => setUsername("demo-user")}
                   className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-bold text-white transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <span className="absolute inset-0 w-full h-full rounded-lg bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600"></span>
-                  <span className="absolute bottom-0 right-0 block w-64 h-64 mb-32 mr-4 transition duration-500 origin-bottom-left transform rotate-45 translate-x-24 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full opacity-30 group-hover:rotate-90 ease"></span>
+                  <span className="absolute inset-0 w-full h-full rounded-lg bg-gradient-to-r from-blue-500 to-red-500"></span>
                   <span className="relative flex items-center gap-2">
                     Login to Participate
                     <svg className="w-5 h-5 ml-2 transition-transform duration-200 ease-in-out group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

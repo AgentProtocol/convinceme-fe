@@ -22,7 +22,7 @@ export default function SideAvatar({ name, color, isActive }: SideAvatarProps) {
           <img
             src={image} 
             alt={name}
-            className={`w-full h-full ${isActive ? 'animate-play' : 'animate-none'}`}
+            className={`w-full h-full`}
             style={{ 
               animationPlayState: isActive ? 'running' : 'paused',
             }}
@@ -32,15 +32,6 @@ export default function SideAvatar({ name, color, isActive }: SideAvatarProps) {
           {name}
         </div>
       </div>
-      {isActive && (
-        <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
-          <div className="flex gap-1 md:gap-1.5">
-            <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-current rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-current rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-current rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
-          </div>
-        </div>
-      )}
     </div>
   );
 } 
