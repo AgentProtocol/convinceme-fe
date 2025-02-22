@@ -1,7 +1,7 @@
 import UsernameInput from "./components/UsernameInput";
 import RecordButton from "./components/RecordButton";
 import { useState } from "react";
-import AudioStream from "./components/AudioStream";
+import AudioPlayer from "./components/AudioPlayer";
 import TranscriptList from "./components/TranscriptList";
 import WelcomeModal from "./components/WelcomeModal";
 import { WebSocketProvider } from './contexts/WebSocketContext';
@@ -55,10 +55,7 @@ function App() {
       <div className="flex flex-col items-center space-y-4">
         <div className="bg-white pb-4 rounded-lg shadow-md w-96">
           <TranscriptList />
-          <AudioStream
-            streamUrl={'http://localhost:8080/hls/playlist.m3u8'}
-            volume={isRecording ? 0.03 : 1.0}
-          />
+          <AudioPlayer />
         </div>
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
           {username ? (

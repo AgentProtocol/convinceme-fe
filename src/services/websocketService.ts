@@ -13,6 +13,33 @@ class WebSocketService extends EventEmitter {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectTimeout = 1000; // Start with 1 second
+  private heartbeatInterval: number | null = null;
+
+  private startHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+
+    this.heartbeatInterval = setInterval(() => {
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.socket.send(JSON.stringify({ type: 'ping' }));
+        // If no pong received within 10 seconds, consider connection dead
+        setTimeout(() => {
+          if (this.socket?.readyState === WebSocket.OPEN) {
+            console.log('No pong received, attempting reconnect...');
+            this.socket.close();
+          }
+        }, 10000);
+      }
+    }, 45000); // Send heartbeat every 45 seconds
+  }
+
+  private stopHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
 
   connect(callbacks: WebSocketCallbacks) {
     if (this.socket?.readyState === WebSocket.OPEN) {
@@ -21,32 +48,48 @@ class WebSocketService extends EventEmitter {
     }
 
     try {
-      this.socket = new WebSocket('ws://localhost:8080/ws/conversation');
+      this.socket = new WebSocket('ws://localhost:3000/ws/conversation');
 
       this.socket.onopen = () => {
         console.log('Connected to WebSocket');
         this.reconnectAttempts = 0;
         callbacks.onStatusChange?.('Connected');
+        this.startHeartbeat();
       };
 
       this.socket.onmessage = async (event) => {
         console.log("Received message:", event.data);
         try {
           const data = JSON.parse(event.data);
-          if (data.type === 'audio') {
-            this.emit('audioStream', {
-              audioPath: data.audioPath,
-              agent: data.agent
-            });
-          } else if (data.type === 'transcript') {
-            this.emit('transcript', data.transcript);
-          } else if (data.type === 'text') {
-            this.emit('transcript', {
-              id: Date.now(),
-              transcript: data.message,
-              username: data.agent,
-              createdAt: new Date()
-            });
+
+          switch (data.type) {
+            case 'audio':
+              // if (data.mode === 'audio') {
+                this.emit('audioStream', {
+                  audioPath: data.audioUrl,
+                  agent: data.agent
+                });
+              // }
+              break;
+              
+            case 'message':
+              this.emit('transcript', {
+                id: Date.now(),
+                transcript: data.content,
+                username: data.agent,
+                createdAt: new Date()
+              });
+              break;
+              
+            case 'conviction':
+              this.emit('conviction', data.metrics);
+              break;
+              
+            case 'pong':
+              break;
+              
+            default:
+              console.warn('Unknown message type:', data.type);
           }
         } catch (error) {
           console.error('Error parsing message:', error);
@@ -87,10 +130,11 @@ class WebSocketService extends EventEmitter {
     }
 
     const data = {
-      type: 'message',
-      topic: topic,
+      type: 'text',
       message: message,
-      username: username
+      topic: topic,
+      mode: 'audo', // Request text-only response
+      both_agents: false // Request only one agent to respond
     };
 
     try {
@@ -108,10 +152,14 @@ class WebSocketService extends EventEmitter {
       return;
     }
 
+    const formData = new FormData();
+    const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
+    formData.append('audio', audioFile);
+
     const data = {
       type: 'audio',
-      username: username,
-      data: audioBlob
+      topic: 'The Nature of Consciousness and Reality',
+      mode: 'audio' // Request audio generation for voice input
     };
 
     try {
@@ -122,6 +170,7 @@ class WebSocketService extends EventEmitter {
   }
 
   disconnect() {
+    this.stopHeartbeat();
     this.socket?.close();
     this.socket = null;
   }
