@@ -82,7 +82,12 @@ class WebSocketService extends EventEmitter {
               break;
               
             case 'conviction':
-              this.emit('conviction', data.metrics);
+              try {
+                const conviction = JSON.parse(data.message);
+                this.emit('conviction', conviction);
+              } catch (error) {
+                console.error('Error parsing conviction:', error);
+              }
               break;
               
             case 'pong':

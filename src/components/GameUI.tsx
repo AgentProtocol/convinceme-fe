@@ -55,25 +55,22 @@ const demoArguments: Argument[] = [
   }
 ];
 
-// Calculate initial scores based on arguments
-const calculateInitialScores = (args: Argument[], side1: string) => {
-  return args.reduce(
-    (scores, arg) => {
-      if (arg.side === side1) {
-        scores.side1 += arg.score;
-      } else {
-        scores.side2 += arg.score;
-      }
-      return scores;
-    },
-    { side1: 500, side2: 500 }
-  );
-};
+// // Calculate initial scores based on arguments
+// const calculateInitialScores = (args: Argument[], side1: string) => {
+//   return args.reduce(
+//     (scores, arg) => {
+//       if (arg.side === side1) {
+//         scores.side1 += arg.score;
+//       } else {
+//         scores.side2 += arg.score;
+//       }
+//       return scores;
+//     },
+//     { side1: 500, side2: 500 }
+//   );
+// };
 
 export default function GameUI({ side1, side2 }: GameUIProps) {
-  const initialScores = calculateInitialScores(demoArguments, side1);
-  const [side1Score, setSide1Score] = useState(initialScores.side1);
-  const [side2Score, setSide2Score] = useState(initialScores.side2);
   const { address } = useAccount();
   // const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
   const [debateArguments, setDebateArguments] = useState<Argument[]>(demoArguments);
@@ -104,13 +101,6 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
       };
       
       setDebateArguments(prev => [...prev, newArgument]);
-      
-      // Update scores
-      if (newArgument.side === side1) {
-        setSide1Score(prev => prev + newArgument.score);
-      } else {
-        setSide2Score(prev => prev + newArgument.score);
-      }
     } catch (error) {
       console.error('Failed to send argument:', error);
     }
@@ -119,8 +109,6 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
   return (
     <div className="h-full max-w-5xl mx-auto px-4 flex flex-col">
       <ScoreBar
-        side1Score={side1Score}
-        side2Score={side2Score}
         // timeLeft={timeLeft}
         className="shrink-0"
       />

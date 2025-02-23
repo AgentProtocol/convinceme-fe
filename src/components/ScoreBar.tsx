@@ -1,16 +1,39 @@
+import { useEffect, useState } from "react";
+import websocketService from "../services/websocketService";
+
 interface ScoreBarProps {
-  side1Score: number;
-  side2Score: number;
   // timeLeft: number;
   className?: string;
 }
 
-export default function ScoreBar({ 
-  side1Score, 
-  side2Score, 
+interface Conviction {
+  agent1_score: number;     // 0-1 conviction score
+  agent2_score: number;     // 0-1 conviction score
+  overall_tension: number;  // 0-1 tension level
+  dominant_agent: string;  // name of dominant speaker
+  analysis_summary: string // brief analysis
+}
+
+export default function ScoreBar({
   // timeLeft,
   className = ""
 }: ScoreBarProps) {
+  const [side1Score, setSide1Score] = useState(100);
+  const [side2Score, setSide2Score] = useState(100);
+
+  useEffect(() => {
+    const handleConviction = (conviction: Conviction) => {
+      console.log(conviction);
+      setSide1Score(conviction.agent1_score * 100);
+      setSide2Score(conviction.agent2_score * 100);
+    };
+
+    websocketService.on('conviction', handleConviction);
+
+    return () => {
+      websocketService.off('conviction', handleConviction);
+    };
+  }, []);
   // Format time as mm:ss
   // const formatTime = (seconds: number) => {
   //   const mins = Math.floor(seconds / 60);
