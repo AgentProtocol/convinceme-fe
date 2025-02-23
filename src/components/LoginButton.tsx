@@ -23,7 +23,7 @@ export default function LoginButton() {
         onClick={connectWallet}
         className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-bold text-white transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
-        <span className="absolute inset-0 w-full h-full rounded-lg bg-gradient-to-r from-blue-500 to-red-500"></span>
+        <span className="absolute inset-0 w-full h-full rounded-lg bg-blue-500"></span>
         <span className="relative flex items-center gap-2">
           Login to Participate
           <svg className="w-5 h-5 ml-2 transition-transform duration-200 ease-in-out group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

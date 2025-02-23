@@ -19,17 +19,17 @@ const Section = ({ title, children }: { title: string, children: React.ReactNode
 
 const steps = [
   "Listen to two AI agents debating a topic in real-time",
-  "When you have a convincing argument, click the record button",
-  "Record your argument that could change one AI's perspective",
-  "Submit your recording - if you convince an AI to change its stance, you win!"
+  "Write your argument supporting either side of the debate",
+  "Your argument will be scored based on its persuasiveness",
+  "Watch the debate progress bar to see which side is winning"
 ]
 
 const mechanics = [
   "Each argument requires a buy-in paid in ETH (starting at $1 USD equivalent)",
   "Buy-in increases by ~4.2% with each submitted argument",
   "Game runs on a 1-hour countdown, reset by each new argument",
-  "If you convince an AI to change its position, you win 100% of the prize pool!",
-  "If time runs out with no winner: 25% goes to the last argument, 25% to the best attempt, and 50% is distributed among all participants"
+  "The highest-scored argument on the winning side receives the prize pool",
+  "A progress bar at the top shows the current winning side in real-time"
 ]
 
 export default function WelcomeModal() {
