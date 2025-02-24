@@ -4,12 +4,12 @@ import GameUI from "./components/GameUI";
 
 function App() {
   return (
-    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-surface-dark to-surface-light flex flex-col overflow-hidden">
       <WelcomeModal />
-      <h1 className="text-3xl font-bold text-gray-800 py-4 text-center shrink-0">
+      <h1 className="text-4xl font-bold text-primary-800 py-6 text-center shrink-0 tracking-tight">
         ConvinceMe
       </h1>
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 px-4 pb-4">
         <GameUI side1="Bear" side2="Tiger" />
       </div>
     </div>

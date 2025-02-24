@@ -76,15 +76,17 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
 
   return (
     <div className="h-full overflow-y-auto" ref={containerRef}>
-      <div className="space-y-3 px-4 py-4">
+      <div className="space-y-4 p-6">
         {debateArguments.map((arg) => (
           <div 
             key={arg.id} 
-            className={`p-3 rounded-lg ${
-              arg.side === side1 ? 'bg-blue-50' : 'bg-red-50'
+            className={`p-4 rounded-xl border transition-all ${
+              arg.side === side1 
+                ? 'bg-blue-50/50 border-blue-100' 
+                : 'bg-red-50/50 border-red-100'
             }`}
           >
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mb-1.5">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm mb-2">
               <span className={`font-medium ${
                 arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>
@@ -94,27 +96,31 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
                 • {formatRelativeTime(arg.timestamp)}
               </span>
               <span className={`ml-auto font-medium ${
-                arg.score >= 70 ? 'text-green-600' :
+                arg.score >= 70 ? 'text-emerald-600' :
                 arg.score >= 50 ? 'text-blue-600' : 'text-gray-600'
               }`}>
                 Score: {arg.score > 0 ? `+${arg.score}` : arg.score}
               </span>
             </div>
             <div>
-              <p className="text-gray-800 text-sm md:text-base leading-relaxed">
-                {expandedArguments.includes(arg.id) ? arg.text : truncateText(arg.text)}
-                {" "}{arg.text.split(' ').length > 10 && (
+              <p className="text-gray-700 text-sm md:text-base leading-relaxed">
+                {expandedArguments.includes(arg.id) ? arg.text : truncateText(arg.text, 6)}
+                {" "}{arg.text.split(' ').length > 6 && (
                 <button
                   onClick={() => toggleExpand(arg.id)}
-                  className="text-sm text-blue-600 hover:text-blue-800 mt-1 font-medium"
+                  className={`text-sm hover:underline font-medium ${
+                    arg.side === side1 ? 'text-blue-600 hover:text-blue-800' : 'text-red-600 hover:text-red-800'
+                  }`}
                 >
                   {expandedArguments.includes(arg.id) ? 'Show less' : 'Show more'}
                 </button>
               )}
               </p>
             </div>
-            <div className="mt-2 flex items-center gap-x-2 text-sm text-gray-500">
-              <span className="font-medium">
+            <div className="mt-3 flex items-center gap-x-2">
+              <span className={`text-sm font-medium ${
+                arg.side === side1 ? 'text-blue-700' : 'text-red-700'
+              }`}>
                 {arg.side}
               </span>
             </div>

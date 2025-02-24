@@ -49,21 +49,21 @@ export default function ScoreBar({
       {/* <div className="text-center text-xl font-bold mb-3">
         {formatTime(timeLeft)}
       </div> */}
-      <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
+      <div className="h-8 bg-gray-100 rounded-xl overflow-hidden shadow-sm">
         <div className="relative h-full">
           <div
-            className="absolute h-full bg-red-500"
+            className="absolute h-full bg-gradient-to-r from-red-500 to-red-600"
             style={{ width: '100%' }}
           />
           <div
-            className="absolute h-full bg-blue-500"
+            className="absolute h-full bg-gradient-to-r from-blue-500 to-blue-600"
             style={{ width: `${scorePercentage}%` }}
           />
         </div>
       </div>
-      <div className="flex justify-between mt-1.5 text-sm md:text-base">
-        <div className="font-medium text-blue-700">{side1Score}</div>
-        <div className="font-medium text-red-700">{side2Score}</div>
+      <div className="flex justify-between mt-2 text-sm md:text-base">
+        <div className="font-semibold text-blue-700">{Math.round(side1Score)}</div>
+        <div className="font-semibold text-red-700">{Math.round(side2Score)}</div>
       </div>
     </div>
   );

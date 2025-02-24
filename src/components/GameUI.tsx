@@ -107,16 +107,15 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
   };
 
   return (
-    <div className="h-full max-w-5xl mx-auto px-4 flex flex-col">
+    <div className="h-full max-w-5xl mx-auto flex flex-col">
       <ScoreBar
-        // timeLeft={timeLeft}
         className="shrink-0"
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col gap-4 min-h-0 pb-4">
+      <div className="flex-1 flex flex-col gap-6 min-h-0">
         {/* Sides Display */}
-        <div className="bg-white p-6 rounded-lg shadow-md shrink-0">
+        <div className="bg-surface-light rounded-xl shadow-soft p-6">
           <AudioPlayer 
             side1={side1}
             side2={side2}
@@ -124,16 +123,12 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
         </div>
 
         {/* Arguments Feed */}
-        <div className="flex-1 bg-white rounded-lg shadow-md flex flex-col min-h-0">
-          <div className="p-4 border-b shrink-0">
-            <h2 className="text-xl font-bold">Debate Arguments</h2>
-          </div>
-
-          <div className="flex-1 min-h-0">
+        <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
+          <div className="flex-1 min-h-0 pt-6">
             <ArgumentsList arguments={debateArguments} side1={side1} />
           </div>
 
-          <div className="p-4 bg-gray-50 border-t shrink-0">
+          <div className="p-6 bg-surface-dark border-t border-gray-100">
             {!address ? (
               <LoginButton />
             ) : (

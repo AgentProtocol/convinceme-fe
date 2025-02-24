@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from 'react'
 const BulletItem = ({ children }: { children: React.ReactNode }) => (
   <li className="flex items-start gap-2">
     <div className="min-w-[20px] h-[20px] mt-1">
-      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+      <div className="w-2 h-2 rounded-full bg-primary-500"></div>
     </div>
     <span>{children}</span>
   </li>
@@ -12,7 +12,7 @@ const BulletItem = ({ children }: { children: React.ReactNode }) => (
 
 const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
   <div>
-    <p className="text-base text-gray-700 font-medium mb-3">{title}</p>
+    <p className="text-lg text-primary-900 font-semibold mb-4">{title}</p>
     {children}
   </div>
 )
@@ -55,7 +55,7 @@ export default function WelcomeModal() {
     <>
       <button
         onClick={handleOpen}
-        className="fixed top-4 right-4 w-10 h-10 rounded-full bg-blue-500 shadow-lg flex items-center justify-center text-white hover:bg-blue-600 transition-colors text-xl font-bold"
+        className="fixed top-4 right-4 w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-primary-500 shadow-soft flex items-center justify-center text-white hover:opacity-90 active:opacity-100 transition-all text-xl"
         aria-label="Show instructions"
       >
         ❔
@@ -72,7 +72,7 @@ export default function WelcomeModal() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
           </TransitionChild>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -86,14 +86,14 @@ export default function WelcomeModal() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-xl transition-all">
-                  <DialogTitle as="h3" className="text-xl font-bold leading-6 text-gray-900 mb-6">
+                <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-soft transition-all">
+                  <DialogTitle as="h3" className="text-2xl font-bold text-primary-900 mb-6">
                     Welcome to ConvinceMe!
                   </DialogTitle>
 
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     <Section title="Here's how it works:">
-                      <ul className="text-base text-gray-600 space-y-2 pl-2">
+                      <ul className="text-base text-gray-600 space-y-3 pl-2">
                         {steps.map((step, index) => (
                           <BulletItem key={index}>{step}</BulletItem>
                         ))}
@@ -101,7 +101,7 @@ export default function WelcomeModal() {
                     </Section>
 
                     <Section title="Game mechanics:">
-                      <ul className="text-base text-gray-600 space-y-2 pl-2">
+                      <ul className="text-base text-gray-600 space-y-3 pl-2">
                         {mechanics.map((mechanic, index) => (
                           <BulletItem key={index}>{mechanic}</BulletItem>
                         ))}
@@ -112,7 +112,7 @@ export default function WelcomeModal() {
                   <div className="mt-8">
                     <button
                       type="button"
-                      className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors"
+                      className="w-full inline-flex justify-center rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 px-6 py-3 text-base font-semibold text-white hover:opacity-90 active:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 transition-all shadow-sm"
                       onClick={handleClose}
                     >
                       Got it, thanks!
