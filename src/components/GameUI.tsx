@@ -109,7 +109,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
 
       // For demo: Add the argument locally with a random score
       const newArgument: Argument = {
-        id: debateArguments.length + 1,
+        id: Math.floor(Math.random() * 1000000) * 10000,
         text: argument,
         score: null,
         side: null,
