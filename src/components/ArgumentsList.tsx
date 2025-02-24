@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export interface Argument {
   id: number;
@@ -16,6 +16,31 @@ interface ArgumentsListProps {
 
 export default function ArgumentsList({ arguments: debateArguments, side1 }: ArgumentsListProps) {
   const [expandedArguments, setExpandedArguments] = useState<number[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !shouldAutoScroll) return;
+
+    container.scrollTop = container.scrollHeight;
+  }, [debateArguments, shouldAutoScroll]);
+
+  // Add scroll event listener to check if we should auto-scroll
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Consider "near bottom" if within 100px of the bottom
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShouldAutoScroll(isNearBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Format relative time
   const formatRelativeTime = (date: Date) => {
@@ -50,7 +75,7 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
   };
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto" ref={containerRef}>
       <div className="space-y-3 px-4 py-4">
         {debateArguments.map((arg) => (
           <div 
