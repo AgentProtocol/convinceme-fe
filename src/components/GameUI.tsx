@@ -87,7 +87,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
         const data = await response.json();
         if (data.arguments) {
           // Transform API data to match our Argument interface
-          const transformedArguments = data.arguments.map(transformArgument);
+          const transformedArguments = data.arguments.reverse().map(transformArgument);
 
           setDebateArguments(transformedArguments);
         } else {
