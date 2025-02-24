@@ -101,18 +101,18 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
     fetchArguments();
   }, []);
 
-  const handleSendArgument = (argument: string) => {
+  const handleSendArgument = (argument: string, side: string) => {
     if (!address || !argument.trim()) return;
 
     try {
-      sendMessage(argument, "Tigers vs Bears", address);
+      sendMessage(argument, "Tigers vs Bears", address, side);
 
       // For demo: Add the argument locally with a random score
       const newArgument: Argument = {
         id: Math.floor(Math.random() * 1000000) * 10000,
         text: argument,
         score: null,
-        side: null,
+        side: side,
         timestamp: new Date(),
         userAddress: address
       };
@@ -151,7 +151,11 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
             {!address ? (
               <LoginButton />
             ) : (
-              <ArgumentInput onSubmit={handleSendArgument} />
+              <ArgumentInput 
+                onSubmit={handleSendArgument} 
+                side1={side1}
+                side2={side2}
+              />
             )}
           </div>
         </div>

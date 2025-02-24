@@ -141,7 +141,7 @@ class WebSocketService extends EventEmitter {
     }
   }
 
-  sendMessage(message: string, topic: string, player_id: string) {
+  sendMessage(message: string, topic: string, player_id: string, side: string) {
     if (!this.socket) {
       console.log('Not connected');
       return;
@@ -152,7 +152,8 @@ class WebSocketService extends EventEmitter {
       message,
       topic,
       mode: 'audio',
-      player_id  
+      player_id,
+      side
     };
 
     try {

@@ -3,7 +3,7 @@ import websocketService from '../services/websocketService';
 
 interface WebSocketContextType {
   connectionStatus: string;
-  sendMessage: (message: string, topic: string, username: string) => void;
+  sendMessage: (message: string, topic: string, username: string, side: string) => void;
   sendAudio: (audioBlob: Blob, username: string) => void;
   reconnect: () => void;
 }
