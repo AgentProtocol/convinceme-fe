@@ -36,10 +36,10 @@ export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-    if (!hasSeenWelcome) {
+    // const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+    // if (!hasSeenWelcome) {
       setIsOpen(true);
-    }
+    // }
   }, []);
 
   const handleClose = () => {

@@ -4,42 +4,39 @@ import websocketService from "../services/websocketService";
 interface ScoreBarProps {
   // timeLeft: number;
   className?: string;
-}
-
-interface Conviction {
-  agent1_score: number;     // 0-1 conviction score
-  agent2_score: number;     // 0-1 conviction score
-  overall_tension: number;  // 0-1 tension level
-  dominant_agent: string;  // name of dominant speaker
-  analysis_summary: string // brief analysis
+  side1: string;
+  side2: string;
 }
 
 export default function ScoreBar({
   // timeLeft,
+  side1,
+  side2,
   className = ""
 }: ScoreBarProps) {
   const [side1Score, setSide1Score] = useState(100);
   const [side2Score, setSide2Score] = useState(100);
 
   useEffect(() => {
-    const handleConviction = (conviction: Conviction) => {
-      console.log(conviction);
-      setSide1Score(conviction.agent1_score * 100);
-      setSide2Score(conviction.agent2_score * 100);
+    const fetchGameScore = async () => {
+      const res = await fetch(import.meta.env.VITE_API_URL + '/api/gameScore');
+      const data = await res.json();
+      setSide1Score(data[side1]);
+      setSide2Score(data[side2]);
     };
 
-    websocketService.on('conviction', handleConviction);
+    const handleGameScore = (gameScore: Record<string, number>) => {
+      setSide1Score(gameScore[side1]);
+      setSide2Score(gameScore[side2]);
+    };
+
+    fetchGameScore();
+    websocketService.on('game_score', handleGameScore);
 
     return () => {
-      websocketService.off('conviction', handleConviction);
+      websocketService.off('game_score', handleGameScore);
     };
   }, []);
-  // Format time as mm:ss
-  // const formatTime = (seconds: number) => {
-  //   const mins = Math.floor(seconds / 60);
-  //   const secs = seconds % 60;
-  //   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  // };
 
   // Calculate score bar percentage
   const scorePercentage = (side1Score / (side1Score + side2Score)) * 100;

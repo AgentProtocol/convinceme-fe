@@ -126,6 +126,8 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
       <ScoreBar
+        side1={side1}
+        side2={side2}
         className="shrink-0"
       />
 

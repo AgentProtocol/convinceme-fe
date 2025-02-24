@@ -14,6 +14,7 @@ class WebSocketService extends EventEmitter {
   private maxReconnectAttempts = 5;
   private reconnectTimeout = 1000; // Start with 1 second
   private heartbeatInterval: number | null = null;
+  private pongReceived = false;
 
   private startHeartbeat() {
     if (this.heartbeatInterval) {
@@ -22,16 +23,18 @@ class WebSocketService extends EventEmitter {
 
     this.heartbeatInterval = setInterval(() => {
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        console.log('Sending ping...');
         this.socket.send(JSON.stringify({ type: 'ping' }));
-        // If no pong received within 10 seconds, consider connection dead
+        
+        // Store timeout ID so we can clear it
         setTimeout(() => {
-          if (this.socket?.readyState === WebSocket.OPEN) {
+          if (!this.pongReceived) {
             console.log('No pong received, attempting reconnect...');
-            this.socket.close();
+            this.socket?.close();
           }
         }, 10000);
       }
-    }, 45000); // Send heartbeat every 45 seconds
+    }, 45000);
   }
 
   private stopHeartbeat() {
@@ -48,6 +51,7 @@ class WebSocketService extends EventEmitter {
     }
 
     try {
+      console.log('Attempting to connect to:', import.meta.env.VITE_WEBSOCKET_URL + '/ws/conversation');
       this.socket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL + '/ws/conversation');
 
       this.socket.onopen = () => {
@@ -93,8 +97,13 @@ class WebSocketService extends EventEmitter {
             case 'argument':
               this.emit('argument', data.argument);
               break;
+
+            case 'game_score':
+              this.emit('game_score', data.gameScore);
+              break;
               
             case 'pong':
+              this.pongReceived = true;
               break;
               
             default:
@@ -110,8 +119,8 @@ class WebSocketService extends EventEmitter {
         callbacks.onError?.(error);
       };
 
-      this.socket.onclose = () => {
-        console.log('Connection closed');
+      this.socket.onclose = (event) => {
+        console.log('Connection closed with code:', event.code, 'reason:', event.reason);
         callbacks.onStatusChange?.('Disconnected');
         
         // Attempt to reconnect
