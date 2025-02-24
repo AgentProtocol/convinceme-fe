@@ -105,7 +105,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
     if (!address || !argument.trim()) return;
 
     try {
-      sendMessage(argument, "debate", address);
+      sendMessage(argument, "Tigers vs Bears", address);
 
       // For demo: Add the argument locally with a random score
       const newArgument: Argument = {
