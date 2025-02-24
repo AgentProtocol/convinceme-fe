@@ -94,7 +94,7 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
         <div className="text-2xl font-bold text-gray-800 mb-2">VS</div>
         <div className="flex flex-col items-center">
           <audio ref={audioRef} style={{ display: 'none' }} />
-          <div className="text-sm text-gray-600 mb-2">{status}</div>
+          {/* <div className="text-sm text-gray-600 mb-2">{status}</div> */}
         </div>
       </div>
 

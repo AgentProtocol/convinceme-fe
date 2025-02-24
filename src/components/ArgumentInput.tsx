@@ -14,6 +14,12 @@ export default function ArgumentInput({ onSubmit, disabled }: ArgumentInputProps
     setNewArgument('');
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !disabled && newArgument.trim()) {
+      handleSubmit();
+    }
+  };
+
   return (
     <div>
       <div className="flex gap-3">
@@ -21,6 +27,7 @@ export default function ArgumentInput({ onSubmit, disabled }: ArgumentInputProps
           type="text"
           value={newArgument}
           onChange={(e) => setNewArgument(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={disabled ? "Please enter username first..." : "Add your argument to the debate..."}
           className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 transition-all placeholder-gray-400 disabled:bg-gray-50"
           disabled={disabled}
