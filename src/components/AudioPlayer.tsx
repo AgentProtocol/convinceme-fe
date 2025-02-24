@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import websocketService from '../services/websocketService';
 import SideAvatar from './SideAvatar';
 
@@ -19,21 +19,12 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentSpeaker, setCurrentSpeaker] = useState<string>(side1);
 
-  useEffect(() => {
-    const handleAudioStream = (audioMessage: AudioMessage) => {
-      audioQueue.current.push(audioMessage);
-      playNextInQueue();
-    };
-
-    websocketService.on('audioStream', handleAudioStream);
-
-    return () => {
-      websocketService.off('audioStream', handleAudioStream);
-    };
-  }, []);
-
-  const playNextInQueue = () => {
-    if (audioQueue.current.length === 0 || isPlaying || !audioRef.current) {
+  const playNextInQueue = useCallback(() => {
+    if (
+      audioQueue.current.length === 0 ||
+      isPlaying ||
+      !audioRef.current
+    ) {
       return;
     }
 
@@ -73,7 +64,21 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
       setStatus('Error');
       playNextInQueue();
     };
-  };
+  }, [isPlaying]);
+
+
+  useEffect(() => {
+    const handleAudioStream = (audioMessage: AudioMessage) => {
+      audioQueue.current.push(audioMessage);
+      playNextInQueue();
+    };
+
+    websocketService.on('audioStream', handleAudioStream);
+
+    return () => {
+      websocketService.off('audioStream', handleAudioStream);
+    };
+  }, [playNextInQueue]);
 
   return (
     <div className="flex items-center justify-between w-full">
