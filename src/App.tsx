@@ -10,7 +10,7 @@ function App() {
         ConvinceMe
       </h1>
       <div className="flex-1 min-h-0 px-4 pb-4">
-        <GameUI side1="Bear" side2="Tiger" />
+        <GameUI side1="Mike 'Grizzly' Johnson" side2="Tony 'The Tiger King' Chen" />
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ interface SideAvatarProps {
 export default function SideAvatar({ name, color, isActive }: SideAvatarProps) {
   const baseClasses = "w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 object-cover rounded-full mb-2";
   const colorClasses = color === 'blue' ? 'text-blue-700' : 'text-red-700';
-  const image = name === "Bear" ? isActive ? bearGif : bearImage : isActive? tigerGif : tigerImage;
+  const image = name.startsWith('M') ? isActive ? bearGif : bearImage : isActive? tigerGif : tigerImage;
 
   return (
     <div className="relative">

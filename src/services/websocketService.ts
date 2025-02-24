@@ -89,6 +89,10 @@ class WebSocketService extends EventEmitter {
                 console.error('Error parsing conviction:', error);
               }
               break;
+
+            case 'argument':
+              this.emit('argument', data.argument);
+              break;
               
             case 'pong':
               break;
@@ -128,7 +132,7 @@ class WebSocketService extends EventEmitter {
     }
   }
 
-  sendMessage(message: string, topic: string, username: string) {
+  sendMessage(message: string, topic: string, player_id: string) {
     if (!this.socket) {
       console.log('Not connected');
       return;
@@ -136,9 +140,10 @@ class WebSocketService extends EventEmitter {
 
     const data = {
       type: 'text',
-      message: message,
-      topic: topic,
+      message,
+      topic,
       mode: 'audio',
+      player_id  
     };
 
     try {
@@ -150,7 +155,7 @@ class WebSocketService extends EventEmitter {
     }
   }
 
-  sendAudio(audioBlob: Blob, username: string) {
+  sendAudio(audioBlob: Blob, player_id: string) {
     if (!this.socket) {
       console.log('Not connected');
       return;
@@ -163,7 +168,8 @@ class WebSocketService extends EventEmitter {
     const data = {
       type: 'audio',
       topic: 'The Nature of Consciousness and Reality',
-      mode: 'audio' // Request audio generation for voice input
+      mode: 'audio', // Request audio generation for voice input
+      player_id
     };
 
     try {

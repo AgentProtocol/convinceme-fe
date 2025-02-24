@@ -86,7 +86,7 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
         <SideAvatar
           name={side1}
           color="blue"
-          isActive={isPlaying && currentSpeaker.startsWith('B')}
+          isActive={isPlaying && currentSpeaker === side1}
         />
       </div>
       
@@ -102,7 +102,7 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
         <SideAvatar
           name={side2}
           color="red"
-          isActive={isPlaying && currentSpeaker.startsWith('T')}
+          isActive={isPlaying && currentSpeaker === side2}
         />
       </div>
     </div>

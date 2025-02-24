@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 export interface Argument {
   id: number;
   text: string;
-  score: number;
-  side: string;
+  score: number | null;
+  side: string | null;
   timestamp: Date;
   userAddress: string;
 }
@@ -81,26 +81,32 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
           <div 
             key={arg.id} 
             className={`p-4 rounded-xl border transition-all ${
-              arg.side === side1 
+              !arg.side ? 'bg-gray-50/50 border-gray-100' : arg.side === side1 
                 ? 'bg-blue-50/50 border-blue-100' 
                 : 'bg-red-50/50 border-red-100'
             }`}
           >
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm mb-2">
               <span className={`font-medium ${
-                arg.side === side1 ? 'text-blue-700' : 'text-red-700'
+                !arg.side ? 'text-gray-700' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>
                 {formatAddress(arg.userAddress)}
               </span>
               <span className="text-gray-500">
                 • {formatRelativeTime(arg.timestamp)}
               </span>
-              <span className={`ml-auto font-medium ${
-                arg.score >= 70 ? 'text-emerald-600' :
-                arg.score >= 50 ? 'text-blue-600' : 'text-gray-600'
-              }`}>
-                Score: {arg.score > 0 ? `+${arg.score}` : arg.score}
-              </span>
+              {arg.score === null ? (
+                <span className={`ml-auto font-medium text-gray-600`}>
+                  Score: Calculating...
+                </span>
+              ) : (
+                <span className={`ml-auto font-medium ${
+                  arg.score >= 70 ? 'text-emerald-600' :
+                  arg.score >= 50 ? 'text-blue-600' : 'text-gray-600'
+                }`}>
+                  Score: {arg.score > 0 ? `+${arg.score}` : arg.score}
+                </span>
+              )}
             </div>
             <div>
               <p className="text-gray-700 text-sm md:text-base leading-relaxed">
@@ -109,7 +115,7 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
                 <button
                   onClick={() => toggleExpand(arg.id)}
                   className={`text-sm hover:underline font-medium ${
-                    arg.side === side1 ? 'text-blue-600 hover:text-blue-800' : 'text-red-600 hover:text-red-800'
+                    !arg.side ? 'text-gray-600 hover:text-gray-800' : arg.side === side1 ? 'text-blue-600 hover:text-blue-800' : 'text-red-600 hover:text-red-800'
                   }`}
                 >
                   {expandedArguments.includes(arg.id) ? 'Show less' : 'Show more'}
@@ -119,7 +125,7 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
             </div>
             <div className="mt-3 flex items-center gap-x-2">
               <span className={`text-sm font-medium ${
-                arg.side === side1 ? 'text-blue-700' : 'text-red-700'
+                !arg.side ? 'text-gray-600' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>
                 {arg.side}
               </span>
