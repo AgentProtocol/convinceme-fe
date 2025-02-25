@@ -4,6 +4,7 @@
 
 ```bash
 pnpm install
+cp .env.example .env
 ```
 
 ### Run
@@ -11,3 +12,4 @@ pnpm install
 ```bash
 pnpm dev
 ```
+
