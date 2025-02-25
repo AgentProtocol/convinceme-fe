@@ -16,7 +16,7 @@ export default function LandingPage({ onEnterGame }: LandingPageProps) {
             className="h-16 md:h-20 mx-auto mb-8"
           />
           <p className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed">
-            Join the ultimate AI-powered debate platform where your arguments shape the outcome.
+            Join the ultimate AI-agent debate platform where your arguments shape the outcome.
             Engage in real-time debates, earn rewards, and prove your point.
           </p>
           <button

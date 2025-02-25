@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import websocketService from '../services/websocketService';
+import { IS_GAME_DISABLED } from '../constants';
 
 interface WebSocketContextType {
   connectionStatus: string;
   sendMessage: (message: string, topic: string, username: string, side: string) => void;
   sendAudio: (audioBlob: Blob, username: string) => void;
   reconnect: () => void;
+  isDisabled: boolean;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
@@ -14,6 +16,12 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [connectionStatus, setConnectionStatus] = useState<string>('Disconnected');
 
   useEffect(() => {
+    // Only connect if the game is not disabled
+    if (IS_GAME_DISABLED) {
+      setConnectionStatus('Paused');
+      return;
+      
+    }
     // Single connection established when the app starts
     websocketService.connect({
       onStatusChange: setConnectionStatus,
@@ -25,12 +33,25 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const value = {
     connectionStatus,
-    sendMessage: websocketService.sendMessage.bind(websocketService),
-    sendAudio: websocketService.sendAudio.bind(websocketService),
-    reconnect: () => websocketService.reconnect({
-      onStatusChange: setConnectionStatus,
-      onError: (error) => console.error('WebSocket error:', error)
-    })
+    sendMessage: (message: string, topic: string, username: string, side: string) => {
+      if (!IS_GAME_DISABLED) {
+        websocketService.sendMessage(message, topic, username, side);
+      }
+    },
+    sendAudio: (audioBlob: Blob, username: string) => {
+      if (!IS_GAME_DISABLED) {
+        websocketService.sendAudio(audioBlob, username);
+      }
+    },
+    reconnect: () => {
+      if (!IS_GAME_DISABLED) {
+        websocketService.reconnect({
+          onStatusChange: setConnectionStatus,
+          onError: (error) => console.error('WebSocket error:', error)
+        });
+      }
+    },
+    isDisabled: IS_GAME_DISABLED
   };
 
   return (

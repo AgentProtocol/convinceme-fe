@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAccount, useCall, useSendTransaction } from '@starknet-react/core';
 import { CONTRACT_ADDRESS, STRK_ADDRESS, CONTRACT_ABI, formatTokenAmount } from '../contracts';
+import { IS_GAME_DISABLED } from '../constants';
 
 interface ArgumentInputProps {
   onSubmit: (argument: string, side: string) => void;
@@ -30,7 +31,7 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
   });
 
   const handleSubmit = async (selectedSide: string) => {
-    if (!newArgument.trim() || !address) return;
+    if (!newArgument.trim() || !address || IS_GAME_DISABLED) return;
 
     try {
       setIsSubmitting(true);
@@ -71,7 +72,7 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
     }
   };
 
-  const isDisabled = disabled || !newArgument.trim() || !address || isSubmitting;
+  const isDisabled = disabled || !newArgument.trim() || !address || isSubmitting || IS_GAME_DISABLED;
   const buyInAmount = actionCostResult ? formatTokenAmount(BigInt(actionCostResult.toString())) : null;
   const buyInText = buyInAmount ? `${buyInAmount} STRK` : '';
 
@@ -79,22 +80,22 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
     <div className="flex flex-col gap-3">
       <div className="relative">
         <input
-          disabled={isSubmitting}
+          disabled={isSubmitting || IS_GAME_DISABLED}
           type="text"
           value={newArgument}
           onChange={(e) => setNewArgument(e.target.value)}
           placeholder={"Add your argument to the debate..."}
           className={`w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 transition-all placeholder-gray-400 disabled:bg-gray-50 ${buyInText ? 'pr-[120px]' : ''}`}
         />
-        {buyInAmount ? (
+        {buyInAmount && !IS_GAME_DISABLED ? (
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-white px-1">
             {buyInText}
           </div>
-        ) : (
+        ) : !IS_GAME_DISABLED ? (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             <div className="h-4 w-16 bg-gray-200 animate-pulse rounded" />
           </div>
-        )}
+        ) : null}
       </div>
       <div className="flex gap-3">
         <button
