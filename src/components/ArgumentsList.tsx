@@ -76,11 +76,11 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
 
   return (
     <div className="h-full overflow-y-auto" ref={containerRef}>
-      <div className="space-y-4 p-6">
+      <div className="space-y-3 p-4">
         {debateArguments.map((arg) => (
           <div 
             key={arg.id} 
-            className={`p-4 rounded-xl border transition-all ${
+            className={`p-3 rounded-xl border transition-all ${
               !arg.side ? 'bg-gray-50/50 border-gray-100' : arg.side === side1 
                 ? 'bg-blue-50/50 border-blue-100' 
                 : 'bg-red-50/50 border-red-100'
@@ -123,7 +123,7 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
               )}
               </p>
             </div>
-            <div className="mt-3 flex items-center gap-x-2">
+            <div className="mt-2 flex items-center gap-x-2">
               <span className={`text-sm font-medium ${
                 !arg.side ? 'text-gray-600' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>

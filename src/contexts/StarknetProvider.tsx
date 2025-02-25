@@ -1,18 +1,17 @@
 import React from "react";
- 
 import { InjectedConnector } from "starknetkit/injected";
 import { ArgentMobileConnector, isInArgentMobileAppBrowser } from "starknetkit/argentMobile";
 import { WebWalletConnector } from "starknetkit/webwallet";
-import { mainnet, sepolia } from "@starknet-react/chains";
 import { StarknetConfig, publicProvider } from "@starknet-react/core";
- 
+import { sepolia } from "@starknet-react/chains";
+
 export default function StarknetProvider({ children }: { children: React.ReactNode }) {
-  const chains = [mainnet, sepolia]
- 
+  const chains = [sepolia];
+
   const connectors = isInArgentMobileAppBrowser() ? [
     ArgentMobileConnector.init({
       options: {
-        dappName: "Example dapp",
+        dappName: "ConvinceMe",
         projectId: "example-project-id",
         url: "https://example.com",
       },
@@ -24,13 +23,13 @@ export default function StarknetProvider({ children }: { children: React.ReactNo
     new WebWalletConnector({ url: "https://web.argent.xyz" }),
     ArgentMobileConnector.init({
       options: {
-        dappName: "Example dapp",
+        dappName: "ConvinceMe",
         projectId: "example-project-id",
         url: "https://example.com",
       }
     })
-  ]
- 
+  ];
+
   return(
     <StarknetConfig
       chains={chains}
@@ -39,5 +38,5 @@ export default function StarknetProvider({ children }: { children: React.ReactNo
     >
       {children}
     </StarknetConfig>
-  )
+  );
 }

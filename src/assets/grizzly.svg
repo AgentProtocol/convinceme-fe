@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <animate
+      id="talking"
+      attributeName="visibility"
+      values="visible;visible"
+      dur="0.8s"
+      repeatCount="indefinite"/>
+  </defs>
+  <!-- Head -->
+  <circle cx="100" cy="100" r="90" fill="#8B4513"/>
+  <!-- Ears -->
+  <circle cx="45" cy="45" r="25" fill="#6B3410"/>
+  <circle cx="155" cy="45" r="25" fill="#6B3410"/>
+  <!-- Eyes -->
+  <circle cx="70" cy="90" r="10" fill="#000000"/>
+  <circle cx="130" cy="90" r="10" fill="#000000"/>
+  <!-- Nose -->
+  <circle cx="100" cy="110" r="15" fill="#000000"/>
+  <!-- Mouth (closed) -->
+  <path d="M70 130 Q100 150 130 130" stroke="#000000" stroke-width="5" fill="none">
+    <animate
+      attributeName="d"
+      dur="0.8s"
+      repeatCount="indefinite"
+      values="
+        M70 130 Q100 150 130 130;
+        M70 140 Q100 120 130 140;
+        M70 130 Q100 150 130 130
+      "
+      calcMode="spline"
+      keyTimes="0; 0.5; 1"
+      keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"/>
+  </path>
+</svg> 

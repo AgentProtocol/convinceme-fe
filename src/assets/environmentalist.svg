@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <circle cx="100" cy="110" r="60" fill="#FFE0BD"/>
+  <!-- Hair -->
+  <path d="M40 90 Q100 40 160 90" stroke="#8B4513" stroke-width="20"/>
+  <!-- Leaf in Hair -->
+  <path d="M120 60 Q140 50 130 80" fill="#228B22"/>
+  <!-- Eyes -->
+  <circle cx="75" cy="100" r="5" fill="#000000"/>
+  <circle cx="125" cy="100" r="5" fill="#000000"/>
+  <!-- Mouth -->
+  <path d="M80 130 Q100 140 120 130" stroke="#000000" stroke-width="3" fill="none"/>
+  <!-- Necklace -->
+  <path d="M70 170 Q100 190 130 170" stroke="#228B22" stroke-width="5"/>
+  <circle cx="100" cy="180" r="5" fill="#228B22"/>
+</svg> 

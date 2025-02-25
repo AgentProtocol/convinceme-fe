@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <circle cx="100" cy="110" r="60" fill="#FFE0BD"/>
+  <!-- Hard Hat -->
+  <path d="M40 90 L160 90 L150 70 L50 70 Z" fill="#FFD700"/>
+  <path d="M60 70 L140 70 L130 50 L70 50 Z" fill="#FFD700"/>
+  <!-- Safety Glasses -->
+  <path d="M60 100 L140 100" stroke="#000000" stroke-width="3"/>
+  <rect x="65" y="85" width="25" height="20" rx="5" fill="#87CEEB"/>
+  <rect x="110" y="85" width="25" height="20" rx="5" fill="#87CEEB"/>
+  <!-- Eyes -->
+  <circle cx="77" cy="95" r="4" fill="#000000"/>
+  <circle cx="123" cy="95" r="4" fill="#000000"/>
+  <!-- Mouth -->
+  <path d="M80 130 Q100 140 120 130" stroke="#000000" stroke-width="3" fill="none"/>
+  <!-- Collar -->
+  <path d="M60 170 L140 170" stroke="#FF8C00" stroke-width="10"/>
+</svg> 

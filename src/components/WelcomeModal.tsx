@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 
 const BulletItem = ({ children }: { children: React.ReactNode }) => (
   <li className="flex items-start gap-2">
@@ -35,12 +35,12 @@ const mechanics = [
 export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    // const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-    // if (!hasSeenWelcome) {
-      setIsOpen(true);
-    // }
-  }, []);
+  // useEffect(() => {
+  //   // const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+  //   // if (!hasSeenWelcome) {
+  //     setIsOpen(true);
+  //   // }
+  // }, []);
 
   const handleClose = () => {
     setIsOpen(false);

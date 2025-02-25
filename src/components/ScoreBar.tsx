@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import websocketService from "../services/websocketService";
+import { CONTRACT_ABI, STRK_ABI, formatTokenAmount } from "../contracts";
+import { CONTRACT_ADDRESS, STRK_ADDRESS } from "../contracts";
+import { useCall } from "@starknet-react/core";
 
 interface ScoreBarProps {
   // timeLeft: number;
@@ -16,6 +19,17 @@ export default function ScoreBar({
 }: ScoreBarProps) {
   const [side1Score, setSide1Score] = useState(100);
   const [side2Score, setSide2Score] = useState(100);
+
+  // Read the contract's STRK balance (prize pot)
+  const { data: balanceResult } = useCall({
+    address: STRK_ADDRESS,
+    abi: STRK_ABI,
+    functionName: 'balanceOf',
+    args: [CONTRACT_ADDRESS],
+    watch: true,
+    refetchInterval: 5000
+  });
+  const prizePot = balanceResult ? formatTokenAmount(BigInt(balanceResult.toString())) : "Loading...";
 
   useEffect(() => {
     const fetchGameScore = async () => {
@@ -46,6 +60,11 @@ export default function ScoreBar({
       {/* <div className="text-center text-xl font-bold mb-3">
         {formatTime(timeLeft)}
       </div> */}
+      <div className="text-center mb-6">
+        <div className="text-3xl font-bold text-primary-600 mb-1">
+          {prizePot} STRK
+        </div>
+      </div>
       <div className="h-8 bg-gray-100 rounded-xl overflow-hidden shadow-sm">
         <div className="relative h-full">
           <div
@@ -58,9 +77,9 @@ export default function ScoreBar({
           />
         </div>
       </div>
-      <div className="flex justify-between mt-2 text-sm md:text-base">
-        <div className="font-semibold text-blue-700">{Math.round(side1Score)}</div>
-        <div className="font-semibold text-red-700">{Math.round(side2Score)}</div>
+      <div className="flex justify-between mt-2 items-center">
+        <div className="font-semibold text-blue-700 text-sm md:text-base">{Math.round(side1Score)}</div>
+        <div className="font-semibold text-red-700 text-sm md:text-base">{Math.round(side2Score)}</div>
       </div>
     </div>
   );

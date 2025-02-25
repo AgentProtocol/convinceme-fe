@@ -1,18 +1,22 @@
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { WebSocketProvider } from './contexts/WebSocketContext';
-import WelcomeModal from "./components/WelcomeModal";
-import GameUI from "./components/GameUI";
+import LandingPage from "./pages/LandingPage";
+import LobbyPage from "./pages/LobbyPage";
+import GamePage from "./pages/GamePage";
 
 function App() {
+  const navigate = useNavigate();
+
+  const handleEnterGame = () => {
+    navigate('/lobby');
+  };
+
   return (
-    <div className="h-screen bg-gradient-to-br from-surface-dark to-surface-light flex flex-col overflow-hidden">
-      <WelcomeModal />
-      <h1 className="text-4xl font-bold text-primary-800 py-6 text-center shrink-0 tracking-tight">
-        ConvinceMe
-      </h1>
-      <div className="flex-1 min-h-0 px-4 pb-4">
-        <GameUI side1="Mike 'Grizzly' Johnson" side2="Tony 'The Tiger King' Chen" />
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage onEnterGame={handleEnterGame} />} />
+      <Route path="/lobby" element={<LobbyPage />} />
+      <Route path="/game" element={<GamePage />} />
+    </Routes>
   );
 }
 
