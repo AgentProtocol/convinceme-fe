@@ -20,7 +20,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       onError: (error) => console.error('WebSocket error:', error)
     });
 
-    return () => websocketService.disconnect();
+    return () => websocketService.disconnect(true);
   }, []);
 
   const value = {

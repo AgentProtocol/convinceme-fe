@@ -189,8 +189,14 @@ class WebSocketService extends EventEmitter {
     }
   }
 
-  disconnect() {
+  disconnect(skipReconnect = false) {
     this.stopHeartbeat();
+    
+    if (skipReconnect) {
+      // Prevent reconnection attempts
+      this.reconnectAttempts = this.maxReconnectAttempts;
+    }
+    
     this.socket?.close();
     this.socket = null;
   }
