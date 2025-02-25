@@ -2,7 +2,7 @@ import React from "react";
 import { InjectedConnector } from "starknetkit/injected";
 import { ArgentMobileConnector, isInArgentMobileAppBrowser } from "starknetkit/argentMobile";
 import { WebWalletConnector } from "starknetkit/webwallet";
-import { StarknetConfig, publicProvider } from "@starknet-react/core";
+import { StarknetConfig, jsonRpcProvider } from "@starknet-react/core";
 import { sepolia } from "@starknet-react/chains";
 
 export default function StarknetProvider({ children }: { children: React.ReactNode }) {
@@ -29,12 +29,22 @@ export default function StarknetProvider({ children }: { children: React.ReactNo
       }
     })
   ];
+  
+  // Use a custom provider with a specific Starknet RPC URL
+  const customProvider = () => {
+    return jsonRpcProvider({
+      rpc: () => ({
+        nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_6",
+      }),
+    });
+  };
 
   return(
     <StarknetConfig
       chains={chains}
-      provider={publicProvider()}
+      provider={customProvider()}
       connectors={connectors}
+      autoConnect={false}
     >
       {children}
     </StarknetConfig>

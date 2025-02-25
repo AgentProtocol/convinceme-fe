@@ -18,7 +18,6 @@ interface AudioPlayerProps {
 
 export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [status, setStatus] = useState('Idle');
   const audioQueue = useRef<AudioMessage[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentSpeaker, setCurrentSpeaker] = useState<string>(side1);
@@ -34,7 +33,6 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
 
     const nextAudio = audioQueue.current[0];
     setIsPlaying(true);
-    setStatus(`Loading ${nextAudio.agent}'s response...`);
 
     // Add timestamp to URL to prevent caching
     const url = `${import.meta.env.VITE_API_URL}${nextAudio.audioPath}?t=${Date.now()}`;
@@ -44,12 +42,10 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
     setCurrentSpeaker(nextAudio.agent);
 
     audioRef.current.oncanplaythrough = () => {
-      setStatus(`Playing ${nextAudio.agent}'s response...`);
       audioRef.current?.play().catch(error => {
         console.error('Playback error:', error);
         setIsPlaying(false);
         audioQueue.current.shift();
-        setStatus('Error');
         playNextInQueue();
       });
     };
@@ -57,7 +53,6 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
     audioRef.current.onended = () => {
       setIsPlaying(false);
       audioQueue.current.shift();
-      setStatus(audioQueue.current.length > 0 ? 'Loading next response...' : 'Idle');
       playNextInQueue();
     };
 
@@ -65,7 +60,6 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
       console.error('Audio error:', audioRef.current?.error);
       setIsPlaying(false);
       audioQueue.current.shift();
-      setStatus('Error');
       playNextInQueue();
     };
   }, [isPlaying]);

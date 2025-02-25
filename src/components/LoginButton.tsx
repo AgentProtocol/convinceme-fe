@@ -1,11 +1,10 @@
-import { useStarknetkitConnectModal } from "starknetkit";
+import { StarknetkitConnector, useStarknetkitConnectModal } from "starknetkit";
 import { useConnect } from "@starknet-react/core";
 
 export default function LoginButton() {
   const { connect, connectors } = useConnect();
   const { starknetkitConnectModal } = useStarknetkitConnectModal({
-    //@ts-expect-error
-    connectors: connectors
+    connectors: connectors as StarknetkitConnector[]
   })
 
   async function connectWallet() {

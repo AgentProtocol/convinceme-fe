@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import websocketService from "../services/websocketService";
-import { CONTRACT_ABI, STRK_ABI, formatTokenAmount } from "../contracts";
+import { STRK_ABI, formatTokenAmount } from "../contracts";
 import { CONTRACT_ADDRESS, STRK_ADDRESS } from "../contracts";
 import { useCall } from "@starknet-react/core";
 
