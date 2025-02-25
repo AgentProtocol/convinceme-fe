@@ -31,33 +31,34 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
 
   const handleSubmit = async (selectedSide: string) => {
     if (!newArgument.trim() || !address) return;
-    
+
     try {
       setIsSubmitting(true);
-
-      const { data: actionCost } = await refetchActionCost();
-      if (!actionCost) {
-        throw new Error('Failed to fetch action cost');
-      }
-
-      // Prepare transaction calls
-      const calls = [
-        {
-          contractAddress: STRK_ADDRESS,
-          entrypoint: 'approve',
-          calldata: [CONTRACT_ADDRESS, actionCost.toString(), "0"]
-        },
-        {
-          contractAddress: CONTRACT_ADDRESS,
-          entrypoint: 'buyin',
-          calldata: []
+      if (!import.meta.env.VITE_SKIP_TRANSACTIONS) {
+        const { data: actionCost } = await refetchActionCost();
+        if (!actionCost) {
+          throw new Error('Failed to fetch action cost');
         }
-      ];
 
-      // Send transactions
-      const result = await sendTransaction(calls);
-      if (!result.transaction_hash) {
-        throw new Error('Transaction failed');
+        // Prepare transaction calls
+        const calls = [
+          {
+            contractAddress: STRK_ADDRESS,
+            entrypoint: 'approve',
+            calldata: [CONTRACT_ADDRESS, actionCost.toString(), "0"]
+          },
+          {
+            contractAddress: CONTRACT_ADDRESS,
+            entrypoint: 'buyin',
+            calldata: []
+          }
+        ];
+
+        // Send transactions
+        const result = await sendTransaction(calls);
+        if (!result.transaction_hash) {
+          throw new Error('Transaction failed');
+        }
       }
 
       // If transactions succeed, submit the argument
