@@ -35,7 +35,7 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
     try {
       setIsSubmitting(true);
 
-      const actionCost = await refetchActionCost();
+      const { data: actionCost } = await refetchActionCost();
       if (!actionCost) {
         throw new Error('Failed to fetch action cost');
       }
