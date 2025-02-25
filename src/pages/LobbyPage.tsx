@@ -28,14 +28,14 @@ interface DebateOption {
 
 const debates: DebateOption[] = [
   {
-    id: 'tigers-vs-bears',
-    title: "Tigers vs Bears: Who Would Win?",
-    description: "Join the heated debate about which apex predator would emerge victorious in a hypothetical encounter.",
+    id: 'memecoin-debate',
+    title: "Are memecoins net negative or positive for the crypto space?",
+    description: "Join the heated debate about the impact of memecoins on the cryptocurrency ecosystem.",
     participants: 24,
     prizePot: "1,250 STRK",
     isActive: true,
-    side1: "Mike 'Grizzly' Johnson",
-    side2: "Tony 'The Tiger King' Chen",
+    side1: "'Memecoin Supercycle' Murad",
+    side2: "'Fundamentals First' Bradford",
     side1Avatar: bearImage,
     side2Avatar: tigerImage,
     timeLeft: "45:21",
