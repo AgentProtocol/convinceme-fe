@@ -19,6 +19,8 @@ export default function ScoreBar({
 }: ScoreBarProps) {
   const [side1Score, setSide1Score] = useState(100);
   const [side2Score, setSide2Score] = useState(100);
+  const [prevSide1Score, setPrevSide1Score] = useState(100);
+  const [prevSide2Score, setPrevSide2Score] = useState(100);
 
   // Read the contract's STRK balance (prize pot)
   const { data: balanceResult } = useCall({
@@ -37,9 +39,27 @@ export default function ScoreBar({
       const data = await res.json();
       setSide1Score(data[side1]);
       setSide2Score(data[side2]);
+      setPrevSide1Score(data[side1]);
+      setPrevSide2Score(data[side2]);
     };
 
     const handleGameScore = (gameScore: Record<string, number>) => {
+      // Check if scores decreased
+      if (gameScore[side1] < side1Score) {
+        // Emit a custom event for side1 score reduction
+        websocketService.emit('avatar_punch', { side: side1 });
+      }
+      
+      if (gameScore[side2] < side2Score) {
+        // Emit a custom event for side2 score reduction
+        websocketService.emit('avatar_punch', { side: side2 });
+      }
+      
+      // Update previous scores
+      setPrevSide1Score(side1Score);
+      setPrevSide2Score(side2Score);
+      
+      // Update current scores
       setSide1Score(gameScore[side1]);
       setSide2Score(gameScore[side2]);
     };
@@ -50,7 +70,7 @@ export default function ScoreBar({
     return () => {
       websocketService.off('game_score', handleGameScore);
     };
-  }, []);
+  }, [side1, side2, side1Score, side2Score]);
 
   // Calculate score bar percentage
   const scorePercentage = (side1Score / (side1Score + side2Score)) * 100;
