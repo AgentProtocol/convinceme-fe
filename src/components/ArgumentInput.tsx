@@ -76,11 +76,6 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
 
   return (
     <div className="flex flex-col gap-3">
-      {isSubmitting && (
-        <div className="text-sm text-gray-600 text-center">
-          Submitting transaction...
-        </div>
-      )}
       <div className="relative">
         <input
           disabled={isSubmitting}

@@ -11,6 +11,7 @@ import websocketService from '../services/websocketService';
 interface GameUIProps {
   side1: string;
   side2: string;
+  topic: string;
 }
 
 interface ArgumentScore {
@@ -35,7 +36,7 @@ interface APIArgument {
   side: string;
 }
 
-export default function GameUI({ side1, side2 }: GameUIProps) {
+export default function GameUI({ side1, side2, topic }: GameUIProps) {
   const { address } = useAccount();
   const [debateArguments, setDebateArguments] = useState<Argument[]>([]);
   const { sendMessage } = useWebSocket();
@@ -105,7 +106,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
     if (!address || !argument.trim()) return;
 
     try {
-      sendMessage(argument, "Tigers vs Bears", address, side);
+      sendMessage(argument, topic, address, side);
 
       // For demo: Add the argument locally with a random score
       const newArgument: Argument = {
