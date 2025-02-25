@@ -29,7 +29,7 @@ export default function ScoreBar({
     watch: true,
     refetchInterval: 5000
   });
-  const prizePot = balanceResult ? formatTokenAmount(BigInt(balanceResult.toString())) : "Loading...";
+  const prizePot = balanceResult ? formatTokenAmount(BigInt(balanceResult.toString())) : null;
 
   useEffect(() => {
     const fetchGameScore = async () => {
@@ -56,16 +56,20 @@ export default function ScoreBar({
   const scorePercentage = (side1Score / (side1Score + side2Score)) * 100;
 
   return (
-    <div className={`py-3 ${className}`}>
+    <div className={`py-2 ${className}`}>
       {/* <div className="text-center text-xl font-bold mb-3">
         {formatTime(timeLeft)}
       </div> */}
-      <div className="text-center mb-6">
-        <div className="text-3xl font-bold text-primary-600 mb-1">
-          {prizePot} STRK
-        </div>
+      <div className="text-center mb-4">
+        {prizePot ? (
+          <div className="text-2xl font-bold text-primary-600 mb-1">
+            {prizePot} STRK
+          </div>
+        ) : (
+          <div className="h-7 w-28 mx-auto bg-gray-200 animate-pulse rounded-lg" />
+        )}
       </div>
-      <div className="h-8 bg-gray-100 rounded-xl overflow-hidden shadow-sm">
+      <div className="h-6 bg-gray-100 rounded-xl overflow-hidden shadow-sm">
         <div className="relative h-full">
           <div
             className="absolute h-full bg-gradient-to-r from-red-500 to-red-600"
@@ -77,9 +81,9 @@ export default function ScoreBar({
           />
         </div>
       </div>
-      <div className="flex justify-between mt-2 items-center">
-        <div className="font-semibold text-blue-700 text-sm md:text-base">{Math.round(side1Score)}</div>
-        <div className="font-semibold text-red-700 text-sm md:text-base">{Math.round(side2Score)}</div>
+      <div className="flex justify-between mt-1.5 items-center">
+        <div className="font-semibold text-blue-700 text-sm">{Math.round(side1Score)}</div>
+        <div className="font-semibold text-red-700 text-sm">{Math.round(side2Score)}</div>
       </div>
     </div>
   );

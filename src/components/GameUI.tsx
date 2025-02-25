@@ -132,9 +132,9 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col gap-4 min-h-0">
+      <div className="flex-1 flex flex-col gap-3 min-h-0">
         {/* Sides Display */}
-        <div className="bg-surface-light rounded-xl shadow-soft p-4">
+        <div className="bg-surface-light rounded-xl shadow-soft p-3">
           <AudioPlayer
             side1={side1}
             side2={side2}
@@ -147,7 +147,7 @@ export default function GameUI({ side1, side2 }: GameUIProps) {
             <ArgumentsList arguments={debateArguments} side1={side1} />
           </div>
 
-          <div className="p-4 bg-surface-dark border-t border-gray-100">
+          <div className="p-3 bg-surface-dark border-t border-gray-100">
             {!address ? (
               <LoginButton />
             ) : (

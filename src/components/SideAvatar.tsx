@@ -7,7 +7,7 @@ interface SideAvatarProps {
 }
 
 export default function SideAvatar({ name, imageStill, imageTalking, color, isActive }: SideAvatarProps) {
-  const baseClasses = "w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 object-cover rounded-full mb-2";
+  const baseClasses = "w-20 h-20 md:w-28 md:h-28 lg:w-36 lg:h-36 object-cover rounded-full mb-2";
   const colorClasses = color === 'blue' ? 'text-blue-700' : 'text-red-700';
   const image = isActive ? imageTalking : imageStill;
 
@@ -23,7 +23,7 @@ export default function SideAvatar({ name, imageStill, imageTalking, color, isAc
             }}
           />
         </div>
-        <div className={`text-lg md:text-xl lg:text-2xl font-bold ${colorClasses}`}>
+        <div className={`text-base md:text-lg lg:text-xl font-bold ${colorClasses}`}>
           {name}
         </div>
       </div>

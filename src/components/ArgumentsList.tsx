@@ -76,17 +76,17 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
 
   return (
     <div className="h-full overflow-y-auto" ref={containerRef}>
-      <div className="space-y-3 p-4">
+      <div className="space-y-2 p-3">
         {debateArguments.map((arg) => (
           <div 
             key={arg.id} 
-            className={`p-3 rounded-xl border transition-all ${
+            className={`p-2.5 rounded-xl border transition-all ${
               !arg.side ? 'bg-gray-50/50 border-gray-100' : arg.side === side1 
                 ? 'bg-blue-50/50 border-blue-100' 
                 : 'bg-red-50/50 border-red-100'
             }`}
           >
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm mb-2">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs mb-1.5">
               <span className={`font-medium ${
                 !arg.side ? 'text-gray-700' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>
@@ -109,12 +109,12 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
               )}
             </div>
             <div>
-              <p className="text-gray-700 text-sm md:text-base leading-relaxed">
+              <p className="text-gray-700 text-sm leading-relaxed">
                 {expandedArguments.includes(arg.id) ? arg.text : truncateText(arg.text, 6)}
                 {" "}{arg.text.split(' ').length > 6 && (
                 <button
                   onClick={() => toggleExpand(arg.id)}
-                  className={`text-sm hover:underline font-medium ${
+                  className={`text-xs hover:underline font-medium ${
                     !arg.side ? 'text-gray-600 hover:text-gray-800' : arg.side === side1 ? 'text-blue-600 hover:text-blue-800' : 'text-red-600 hover:text-red-800'
                   }`}
                 >
@@ -123,8 +123,8 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
               )}
               </p>
             </div>
-            <div className="mt-2 flex items-center gap-x-2">
-              <span className={`text-sm font-medium ${
+            <div className="mt-1.5 flex items-center gap-x-2">
+              <span className={`text-xs font-medium ${
                 !arg.side ? 'text-gray-600' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>
                 {arg.side}
