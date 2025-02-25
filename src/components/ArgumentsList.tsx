@@ -104,7 +104,7 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
                   arg.score >= 70 ? 'text-emerald-600' :
                   arg.score >= 50 ? 'text-blue-600' : 'text-gray-600'
                 }`}>
-                  Score: {arg.score > 0 ? `+${arg.score}` : arg.score}
+                  Score: {arg.score > 0 ? `+${Math.round(arg.score)}` : Math.round(arg.score)}
                 </span>
               )}
             </div>
