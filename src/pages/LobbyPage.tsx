@@ -89,17 +89,24 @@ const debates: DebateOption[] = [
   }
 ];
 
-function DebatePreview({ debate }: { debate: DebateOption }) {
+function DebatePreview({ debate, isFirst }: { debate: DebateOption, isFirst?: boolean }) {
   const navigate = useNavigate();
 
   return (
     <div
-      className={`bg-white rounded-2xl shadow-soft overflow-hidden transition-all ${
-        debate.isActive ? 'hover:shadow-lg cursor-pointer' : 'opacity-60'
+      className={`bg-white rounded-2xl overflow-hidden transition-all ${
+        debate.isActive 
+          ? `hover:shadow-lg cursor-pointer ${isFirst ? 'ring-2 ring-primary-500 shadow-xl scale-[1.02]' : 'shadow-soft'}` 
+          : 'opacity-60 shadow-soft'
       }`}
       onClick={() => debate.isActive && navigate('/game')}
     >
-      <div className="p-4 md:p-6">
+      {isFirst && (
+        <div className="bg-gradient-to-r from-primary-600 to-primary-500 text-white text-center text-sm py-1.5 font-medium">
+          Featured Debate 🔥
+        </div>
+      )}
+      <div className={`p-4 md:p-6 ${isFirst ? 'bg-gradient-to-b from-white to-primary-50' : ''}`}>
         {/* Top Stats */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -108,14 +115,14 @@ function DebatePreview({ debate }: { debate: DebateOption }) {
               {debate.participants} participants
             </span>
           </div>
-          <div className="text-sm font-medium text-primary-700">
+          <div className={`text-sm font-medium ${isFirst ? 'text-primary-800' : 'text-primary-700'}`}>
             {debate.timeLeft}
           </div>
         </div>
 
         {/* Title & Description */}
         <div className="mb-6">
-          <h2 className="text-lg md:text-xl font-bold text-primary-900 mb-2">
+          <h2 className={`text-lg md:text-xl font-bold mb-2 ${isFirst ? 'text-primary-800' : 'text-primary-900'}`}>
             {debate.title}
           </h2>
           <p className="text-sm text-gray-600">
@@ -125,7 +132,7 @@ function DebatePreview({ debate }: { debate: DebateOption }) {
 
         {/* Prize Pool */}
         <div className="text-center mb-4">
-          <div className="text-3xl font-bold text-primary-600 mb-1">
+          <div className={`text-3xl font-bold mb-1 ${isFirst ? 'text-primary-700' : 'text-primary-600'}`}>
             {debate.prizePot}
           </div>
         </div>
@@ -141,7 +148,7 @@ function DebatePreview({ debate }: { debate: DebateOption }) {
         {/* Debaters Section */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full overflow-hidden mb-2 bg-gray-50">
+            <div className={`w-12 h-12 rounded-full overflow-hidden mb-2 bg-gray-50 ${isFirst ? 'ring-2 ring-blue-200' : ''}`}>
               <img 
                 src={debate.side1Avatar} 
                 alt={debate.side1} 
@@ -154,11 +161,11 @@ function DebatePreview({ debate }: { debate: DebateOption }) {
           </div>
 
           <div className="flex flex-col items-center px-4">
-            <div className="text-2xl font-bold text-gray-400">VS</div>
+            <div className={`text-2xl font-bold ${isFirst ? 'text-primary-800' : 'text-gray-400'}`}>VS</div>
           </div>
 
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full overflow-hidden mb-2 bg-gray-50">
+            <div className={`w-12 h-12 rounded-full overflow-hidden mb-2 bg-gray-50 ${isFirst ? 'ring-2 ring-red-200' : ''}`}>
               <img 
                 src={debate.side2Avatar} 
                 alt={debate.side2} 
@@ -180,7 +187,7 @@ function DebatePreview({ debate }: { debate: DebateOption }) {
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               debate.isActive 
-                ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white hover:opacity-90 active:opacity-100'
+                ? `bg-gradient-to-r from-primary-600 to-primary-500 text-white hover:opacity-90 active:opacity-100 ${isFirst ? 'shadow-md' : ''}`
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
@@ -207,8 +214,8 @@ export default function LobbyPage() {
           </header>
 
           <div className="space-y-3 md:space-y-4">
-            {debates.map((debate) => (
-              <DebatePreview key={debate.id} debate={debate} />
+            {debates.map((debate, index) => (
+              <DebatePreview key={debate.id} debate={debate} isFirst={index === 0} />
             ))}
           </div>
         </div>
