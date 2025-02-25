@@ -19,6 +19,7 @@ export default function ScoreBar({
 }: ScoreBarProps) {
   const [side1Score, setSide1Score] = useState(100);
   const [side2Score, setSide2Score] = useState(100);
+  const [prizePool, setPrizePool] = useState("0");
 
   // Read the contract's STRK balance (prize pot)
   const { data: balanceResult } = useCall({
@@ -62,9 +63,11 @@ export default function ScoreBar({
       </div> */}
       <div className="text-center mb-4">
         {prizePot ? (
-          <div className="text-2xl font-bold text-primary-600 mb-1">
-            {prizePot} STRK
-          </div>
+          <div className="text-center mb-1">
+          <div className="text-xl font-bold text-primary-800">{prizePool} STRK</div>
+          <div className="text-xs text-gray-600 font-medium mt-1 mb-1">Prize pool</div>
+        </div>
+          
         ) : (
           <div className="h-7 w-28 mx-auto bg-gray-200 animate-pulse rounded-lg" />
         )}

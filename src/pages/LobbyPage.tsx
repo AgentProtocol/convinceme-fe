@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import PreviewScoreBar from '../components/PreviewScoreBar';
+import ConvinceMe_logo from '../assets/ConvinceMe_logo.png';
 
 import chef1Avatar from '../assets/chef1.svg';
 import chef2Avatar from '../assets/chef2.svg';
@@ -205,9 +206,14 @@ export default function LobbyPage() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <header className="text-center mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-primary-900 mb-2">
+            <img 
+              src={ConvinceMe_logo} 
+              alt="ConvinceMe Logo" 
+              className="h-16 md:h-20 mx-auto mb-6"
+            />
+            <h2 className="text-2xl md:text-3xl font-bold text-primary-900 mb-2">
               Active Debates
-            </h1>
+            </h2>
             <p className="text-sm md:text-base text-gray-600">
               Choose a debate to join and make your voice heard
             </p>

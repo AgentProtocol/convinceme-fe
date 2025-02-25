@@ -1,3 +1,5 @@
+import ConvinceMe_logo from '../assets/ConvinceMe_logo.png';
+
 interface LandingPageProps {
   onEnterGame: () => void;
 }
@@ -8,9 +10,11 @@ export default function LandingPage({ onEnterGame }: LandingPageProps) {
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-32">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-primary-900 mb-6">
-            ConvinceMe
-          </h1>
+          <img 
+            src={ConvinceMe_logo} 
+            alt="ConvinceMe Logo" 
+            className="h-16 md:h-20 mx-auto mb-8"
+          />
           <p className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed">
             Join the ultimate AI-powered debate platform where your arguments shape the outcome.
             Engage in real-time debates, earn rewards, and prove your point.
