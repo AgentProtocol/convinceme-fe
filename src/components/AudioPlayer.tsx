@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import websocketService from '../services/websocketService';
 import SideAvatar from './SideAvatar';
-import bearImage from '../assets/bear.png';
-import bearGif from '../assets/beargif.gif';
-import tigerImage from '../assets/tiger.png';
-import tigerGif from '../assets/tigergif.gif';
+import agent1Image from '../assets/agent1.png';
+import agent1Gif from '../assets/agent1.gif';
+import agent2Image from '../assets/agent2.png';
+import agent2Gif from '../assets/agent2.gif';
 
 interface AudioMessage {
   audioPath: string;
@@ -83,8 +83,8 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
       <div className="flex-1 text-center">
         <SideAvatar
           name={side1}
-          imageStill={bearImage}
-          imageTalking={bearGif}
+          imageStill={agent1Image}
+          imageTalking={agent1Gif}
           color="blue"
           isActive={isPlaying && currentSpeaker === side1}
         />
@@ -101,8 +101,8 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
       <div className="flex-1 text-center">
         <SideAvatar
           name={side2}
-          imageStill={tigerImage}
-          imageTalking={tigerGif}
+          imageStill={agent2Image}
+          imageTalking={agent2Gif}
           color="red"
           isActive={isPlaying && currentSpeaker === side2}
         />

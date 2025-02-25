@@ -11,7 +11,7 @@ export default function GamePage() {
           ConvinceMe
         </h1>
         <div className="flex-1 min-h-0 px-4 pb-4">
-          <GameUI side1="'Memecoin Supercycle' Murad" side2="'Fundamentals First' Bradford" topic="Are memecoins net negative or positive for the crypto space?"/>
+          <GameUI side1="'Fundamentals First' Bradford" side2="'Memecoin Supercycle' Murad" topic="Are memecoins net negative or positive for the crypto space?"/>
         </div>
       </div>
     </WebSocketProvider>

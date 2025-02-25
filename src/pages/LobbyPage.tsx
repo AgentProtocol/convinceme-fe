@@ -7,8 +7,8 @@ import scientist1Avatar from '../assets/scientist1.svg';
 import scientist2Avatar from '../assets/scientist2.svg';
 import environmentalistAvatar from '../assets/environmentalist.svg';
 import engineerAvatar from '../assets/engineer.svg';
-import bearImage from '../assets/bear.png';
-import tigerImage from '../assets/tiger.png';
+import agent1Image from '../assets/agent1.png';
+import agent2Image from '../assets/agent2.png';
 
 interface DebateOption {
   id: string;
@@ -34,10 +34,10 @@ const debates: DebateOption[] = [
     participants: 24,
     prizePot: "1,250 STRK",
     isActive: true,
-    side1: "'Memecoin Supercycle' Murad",
-    side2: "'Fundamentals First' Bradford",
-    side1Avatar: bearImage,
-    side2Avatar: tigerImage,
+    side1: "'Fundamentals First' Bradford",
+    side2: "'Memecoin Supercycle' Murad",
+    side1Avatar: agent1Image,
+    side2Avatar: agent2Image,
     timeLeft: "45:21",
     side1Score: 120,
     side2Score: 80
