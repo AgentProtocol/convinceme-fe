@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScoreBar from './ScoreBar';
 import ArgumentsList, { Argument } from './ArgumentsList';
@@ -7,6 +7,7 @@ import LoginButton from './LoginButton';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAccount } from "@starknet-react/core";
 import websocketService from '../services/websocketService';
+import InactivityModal from './InactivityModal';
 
 interface GameUIProps {
   side1: string;
@@ -39,7 +40,42 @@ interface APIArgument {
 export default function GameUI({ side1, side2, topic }: GameUIProps) {
   const { address } = useAccount();
   const [debateArguments, setDebateArguments] = useState<Argument[]>([]);
-  const { sendMessage } = useWebSocket();
+  const { sendMessage, pauseConnection, reconnect } = useWebSocket();
+  const [isInactive, setIsInactive] = useState(false);
+  const inactivityTimerRef = useRef<number | null>(null);
+
+  const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+  const resetInactivityTimer = () => {
+    // Clear existing timer
+    if (inactivityTimerRef.current) {
+      window.clearTimeout(inactivityTimerRef.current);
+    }
+
+    // Set new timer
+    inactivityTimerRef.current = window.setTimeout(() => {
+      setIsInactive(true);
+      pauseConnection();
+    }, INACTIVITY_TIMEOUT);
+  };
+
+  const handleResumeGame = () => {
+    setIsInactive(false);
+    reconnect();
+    resetInactivityTimer();
+  };
+
+  // Initialize inactivity timer on component mount
+  useEffect(() => {
+    resetInactivityTimer();
+
+    // Clean up timer on unmount
+    return () => {
+      if (inactivityTimerRef.current) {
+        window.clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, []);
 
   const transformArgument = (arg: APIArgument): Argument => ({
     id: arg.id,
@@ -50,10 +86,12 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
     userAddress: arg.player_id
   });
 
-  // Add WebSocket argument listener
   useEffect(() => {
     const handleNewArgument = (argument: APIArgument) => {
       const newArgument = transformArgument(argument);
+
+      // Reset inactivity timer when a new argument is received
+      resetInactivityTimer();
 
       setDebateArguments(prev => {
         const existingIndex = prev.findIndex(
@@ -80,7 +118,6 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
     };
   }, [side1, side2]);
 
-  // Add useEffect to fetch arguments
   useEffect(() => {
     const fetchArguments = async () => {
       try {
@@ -108,7 +145,9 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
     try {
       sendMessage(argument, topic, address, side);
 
-      // For demo: Add the argument locally with a random score
+      // Reset inactivity timer when user sends an argument
+      resetInactivityTimer();
+
       const newArgument: Argument = {
         id: Math.floor(Math.random() * 1000000) * 10000,
         text: argument,
@@ -126,6 +165,8 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
 
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
+      <InactivityModal isOpen={isInactive} onResume={handleResumeGame} />
+      
       <ScoreBar
         side1={side1}
         side2={side2}

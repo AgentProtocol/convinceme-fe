@@ -8,6 +8,7 @@ interface WebSocketContextType {
   sendAudio: (audioBlob: Blob, username: string) => void;
   reconnect: () => void;
   isDisabled: boolean;
+  pauseConnection: () => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
@@ -20,8 +21,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (IS_GAME_DISABLED) {
       setConnectionStatus('Paused');
       return;
-      
     }
+    
     // Single connection established when the app starts
     websocketService.connect({
       onStatusChange: setConnectionStatus,
@@ -30,6 +31,11 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     return () => websocketService.disconnect(true);
   }, []);
+
+  const pauseConnection = () => {
+    websocketService.disconnect(true);
+    setConnectionStatus('Paused');
+  };
 
   const value = {
     connectionStatus,
@@ -51,7 +57,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         });
       }
     },
-    isDisabled: IS_GAME_DISABLED
+    isDisabled: IS_GAME_DISABLED || connectionStatus === 'Paused',
+    pauseConnection
   };
 
   return (
