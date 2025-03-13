@@ -8,6 +8,7 @@ import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAccount } from "@starknet-react/core";
 import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
+import { IS_GAME_DISABLED } from '../constants';
 
 interface GameUIProps {
   side1: string;
@@ -47,6 +48,7 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
   const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
   const resetInactivityTimer = () => {
+    if (IS_GAME_DISABLED) return;
     // Clear existing timer
     if (inactivityTimerRef.current) {
       window.clearTimeout(inactivityTimerRef.current);
