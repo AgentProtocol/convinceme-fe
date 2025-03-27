@@ -21,6 +21,8 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
   const audioQueue = useRef<AudioMessage[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentSpeaker, setCurrentSpeaker] = useState<string>(side1);
+  const [hitSide, setHitSide] = useState<string | null>(null);
+  const currentScore = useRef<Record<string, number>>({});
 
   const playNextInQueue = useCallback(() => {
     if (
@@ -78,6 +80,25 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
     };
   }, [playNextInQueue]);
 
+  useEffect(() => {
+    const handleGameScore = (gameScore: Record<string, number>) => {
+      if (gameScore[side1] < currentScore.current[side1]) {
+        setHitSide(side1);
+        setTimeout(() => setHitSide(null), 800);
+      }
+      if (gameScore[side2] < currentScore.current[side2]) {
+        setHitSide(side2);
+        setTimeout(() => setHitSide(null), 800);
+      }
+      currentScore.current = gameScore;
+    };
+
+    websocketService.on('game_score', handleGameScore);
+    return () => {
+      websocketService.off('game_score', handleGameScore);
+    };
+  }, [side1, side2]);
+
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex-1 text-center">
@@ -87,6 +108,7 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
           imageTalking={agent1Gif}
           color="blue"
           isActive={isPlaying && currentSpeaker === side1}
+          isHit={hitSide === side1}
         />
       </div>
       
@@ -105,6 +127,7 @@ export default function AudioPlayer({ side1, side2 }: AudioPlayerProps) {
           imageTalking={agent2Gif}
           color="red"
           isActive={isPlaying && currentSpeaker === side2}
+          isHit={hitSide === side2}
         />
       </div>
     </div>
