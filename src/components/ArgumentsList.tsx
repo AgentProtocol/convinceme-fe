@@ -116,11 +116,15 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
               </p>
             </div>
             <div className="mt-1.5 flex items-center gap-x-2">
-              <span className={`text-xs font-medium ${
-                !arg.side ? 'text-gray-600' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
-              }`}>
-                {arg.side}
-              </span>
+              {arg.score && (
+                <div className="ml-auto flex items-center justify-end gap-x-3 text-xs text-gray-500">
+                  <span title="Strength">💪 {Math.round(arg.score.strength)}</span>
+                  <span title="Relevance">🎯 {Math.round(arg.score.relevance)}</span>
+                  <span title="Logic">🧠 {Math.round(arg.score.logic)}</span>
+                  <span title="Truth">✅ {Math.round(arg.score.truth)}</span>
+                  <span title="Humor">😄 {Math.round(arg.score.humor)}</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
