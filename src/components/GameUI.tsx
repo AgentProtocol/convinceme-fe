@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScoreBar from './ScoreBar';
-import ArgumentsList, { Argument } from './ArgumentsList';
+import ArgumentsList from './ArgumentsList';
 import ArgumentInput from './ArgumentInput';
 import LoginButton from './LoginButton';
 import { useWebSocket } from '../contexts/WebSocketContext';
@@ -28,10 +28,10 @@ interface ArgumentScore {
   explanation: string;
 }
 
-interface APIArgument {
+export interface Argument {
   id: number;
   player_id: string;
-  topic: string;
+  topic?: string;
   content: string;
   created_at: string;
   score?: ArgumentScore;
@@ -79,36 +79,25 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
     };
   }, []);
 
-  const transformArgument = (arg: APIArgument): Argument => ({
-    id: arg.id,
-    text: arg.content,
-    score: arg.score?.average ?? 0,
-    side: arg.side,
-    timestamp: new Date(arg.created_at),
-    userAddress: arg.player_id
-  });
-
   useEffect(() => {
-    const handleNewArgument = (argument: APIArgument) => {
-      const newArgument = transformArgument(argument);
-
+    const handleNewArgument = (argument: Argument) => {
       // Reset inactivity timer when a new argument is received
       resetInactivityTimer();
 
       setDebateArguments(prev => {
         const existingIndex = prev.findIndex(
-          arg => arg.text === newArgument.text && arg.userAddress === newArgument.userAddress
+          arg => arg.content === argument.content && arg.player_id === argument.player_id
         );
 
         if (existingIndex !== -1) {
           // Update existing argument
           const updated = [...prev];
-          updated[existingIndex] = newArgument;
+          updated[existingIndex] = argument;
           return updated;
         }
 
         // Add new argument
-        return [...prev, newArgument];
+        return [...prev, argument];
       });
     };
 
@@ -127,9 +116,9 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
         const data = await response.json();
         if (data.arguments) {
           // Transform API data to match our Argument interface
-          const transformedArguments = data.arguments.reverse().map(transformArgument);
+          const orderedArguments = data.arguments.reverse();
 
-          setDebateArguments(transformedArguments);
+          setDebateArguments(orderedArguments);
         } else {
           console.error('No arguments found');
         }
@@ -152,11 +141,10 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
 
       const newArgument: Argument = {
         id: Math.floor(Math.random() * 1000000) * 10000,
-        text: argument,
-        score: null,
+        content: argument,
         side: side,
-        timestamp: new Date(),
-        userAddress: address
+        created_at: new Date().toISOString(),
+        player_id: address
       };
 
       setDebateArguments(prev => [...prev, newArgument]);

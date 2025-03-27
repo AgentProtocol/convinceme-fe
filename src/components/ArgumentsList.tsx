@@ -1,13 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-
-export interface Argument {
-  id: number;
-  text: string;
-  score: number | null;
-  side: string | null;
-  timestamp: Date;
-  userAddress: string;
-}
+import { Argument } from './GameUI';
 
 interface ArgumentsListProps {
   arguments: Argument[];
@@ -43,9 +35,9 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
   }, []);
 
   // Format relative time
-  const formatRelativeTime = (date: Date) => {
+  const formatRelativeTime = (date: string) => {
     const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const diffInSeconds = Math.floor((now.getTime() - new Date(date).getTime()) / 1000);
     
     if (diffInSeconds < 60) return 'just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
@@ -90,28 +82,28 @@ export default function ArgumentsList({ arguments: debateArguments, side1 }: Arg
               <span className={`font-medium ${
                 !arg.side ? 'text-gray-700' : arg.side === side1 ? 'text-blue-700' : 'text-red-700'
               }`}>
-                {formatAddress(arg.userAddress)}
+                {formatAddress(arg.player_id)}
               </span>
               <span className="text-gray-500">
-                • {formatRelativeTime(arg.timestamp)}
+                • {formatRelativeTime(arg.created_at)}
               </span>
-              {arg.score === null ? (
+              {!arg.score ? (
                 <span className={`ml-auto font-medium text-gray-600`}>
                   Score: Calculating...
                 </span>
               ) : (
                 <span className={`ml-auto font-medium ${
-                  arg.score >= 70 ? 'text-emerald-600' :
-                  arg.score >= 50 ? 'text-blue-600' : 'text-gray-600'
+                  arg.score.average >= 70 ? 'text-emerald-600' :
+                  arg.score.average >= 50 ? 'text-blue-600' : 'text-gray-600'
                 }`}>
-                  Score: {arg.score > 0 ? `+${Math.round(arg.score)}` : Math.round(arg.score)}
+                  Score: {arg.score.average > 0 ? `+${Math.round(arg.score.average)}` : Math.round(arg.score.average)}
                 </span>
               )}
             </div>
             <div>
               <p className="text-gray-700 text-sm leading-relaxed">
-                {expandedArguments.includes(arg.id) ? arg.text : truncateText(arg.text, 6)}
-                {" "}{arg.text.split(' ').length > 6 && (
+                {expandedArguments.includes(arg.id) ? arg.content : truncateText(arg.content, 6)}
+                {" "}{arg.content.split(' ').length > 6 && (
                 <button
                   onClick={() => toggleExpand(arg.id)}
                   className={`text-xs hover:underline font-medium ${
