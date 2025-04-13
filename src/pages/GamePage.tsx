@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import WelcomeModal from "../components/WelcomeModal";
 import GameUI from "../components/GameUI";
 import { WebSocketProvider } from "../contexts/WebSocketContext";
@@ -6,22 +8,38 @@ import GamePausedBanner from "../components/GamePausedBanner";
 import { IS_GAME_DISABLED } from "../constants";
 
 export default function GamePage() {
+  const navigate = useNavigate();
+  const [isReady, setIsReady] = useState(false);
+
+  // This page is now deprecated and should redirect to the lobby
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('/lobby');
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
-    <WebSocketProvider>
-      <div className="h-screen bg-gradient-to-br from-surface-dark to-surface-light flex flex-col overflow-hidden">
-        <WelcomeModal />
-        {IS_GAME_DISABLED && <GamePausedBanner />}
-        <div className="text-center shrink-0 pt-4">
-          <img 
-            src={ConvinceMe_logo} 
-            alt="ConvinceMe Logo" 
-            className="h-6 md:h-12 mx-auto mb-4"
-          />
-        </div>
-        <div className="flex-1 min-h-0 px-4 pb-4">
-          <GameUI side1="'Fundamentals First' Bradford" side2="'Memecoin Supercycle' Murad" topic="Are memecoins net negative or positive for the crypto space?"/>
-        </div>
-      </div>
-    </WebSocketProvider>
+    <div className="h-screen bg-gradient-to-br from-surface-dark to-surface-light flex flex-col items-center justify-center">
+      <img 
+        src={ConvinceMe_logo} 
+        alt="ConvinceMe Logo" 
+        className="h-12 mb-8"
+      />
+      <p className="text-center mb-6">
+        This page is deprecated. <br />
+        Please use the debate-specific pages instead.
+      </p>
+      <p className="text-center mb-8">
+        Redirecting to lobby...
+      </p>
+      <button 
+        onClick={() => navigate('/lobby')} 
+        className="px-4 py-2 bg-primary-600 text-white rounded-lg"
+      >
+        Go to Lobby Now
+      </button>
+    </div>
   );
 } 

@@ -9,36 +9,16 @@ import { useAccount } from "@starknet-react/core";
 import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
 import { IS_GAME_DISABLED } from '../constants';
+import { Argument, ArgumentScore } from '../types';
 
 interface GameUIProps {
   side1: string;
   side2: string;
   topic: string;
+  debateId: string;
 }
 
-interface ArgumentScore {
-  strength: number;
-  relevance: number;
-  logic: number;
-  truth: number;
-  humor: number;
-  average: number;
-  Agent1_support: number;
-  Agent2_support: number;
-  explanation: string;
-}
-
-export interface Argument {
-  id: number;
-  player_id: string;
-  topic?: string;
-  content: string;
-  created_at: string;
-  score?: ArgumentScore;
-  side: string;
-}
-
-export default function GameUI({ side1, side2, topic }: GameUIProps) {
+export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
   const { address } = useAccount();
   const [debateArguments, setDebateArguments] = useState<Argument[]>([]);
   const { sendMessage, pauseConnection, reconnect } = useWebSocket();
@@ -112,12 +92,13 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
   useEffect(() => {
     const fetchArguments = async () => {
       try {
-        const response = await fetch(import.meta.env.VITE_API_URL + '/api/arguments');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/debates/${debateId}/arguments`);
+        console.log('response', response);
         const data = await response.json();
-        if (data.arguments) {
+        console.log('data', data);
+        if (data.items) {
           // Transform API data to match our Argument interface
-          const orderedArguments = data.arguments.reverse();
-
+          const orderedArguments = data.items.reverse();
           setDebateArguments(orderedArguments);
         } else {
           console.error('No arguments found');
@@ -128,23 +109,28 @@ export default function GameUI({ side1, side2, topic }: GameUIProps) {
     };
 
     fetchArguments();
-  }, []);
+  }, [debateId]);
 
   const handleSendArgument = (argument: string, side: string) => {
-    if (!address || !argument.trim()) return;
+    if (!address || !argument.trim() || !debateId) return;
 
     try {
+      // Debate ID is required
       sendMessage(argument, topic, address, side);
 
       // Reset inactivity timer when user sends an argument
       resetInactivityTimer();
 
+      // Create a temporary local representation of the argument
+      // Note: The backend will assign the real ID and possibly add scores
       const newArgument: Argument = {
-        id: Math.floor(Math.random() * 1000000) * 10000,
+        id: Math.floor(Math.random() * 1000000) * 10000, // Temporary ID
         content: argument,
         side: side,
         created_at: new Date().toISOString(),
-        player_id: address
+        player_id: address,
+        debate_id: debateId,
+        topic: topic
       };
 
       setDebateArguments(prev => [...prev, newArgument]);

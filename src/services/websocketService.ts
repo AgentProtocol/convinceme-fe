@@ -15,6 +15,7 @@ class WebSocketService extends EventEmitter {
   private reconnectTimeout = 1000; // Start with 1 second
   private heartbeatInterval: number | null = null;
   private pongReceived = false;
+  private currentDebateId: string = '';
 
   private startHeartbeat() {
     if (this.heartbeatInterval) {
@@ -44,15 +45,24 @@ class WebSocketService extends EventEmitter {
     }
   }
 
-  connect(callbacks: WebSocketCallbacks) {
+  connect(callbacks: WebSocketCallbacks, debateId: string) {
     if (this.socket?.readyState === WebSocket.OPEN) {
       console.log('Already connected');
       return;
     }
 
+    if (!debateId) {
+      console.error('Debate ID is required for WebSocket connection');
+      callbacks.onStatusChange?.('Connection failed: Missing debate ID');
+      return;
+    }
+
+    this.currentDebateId = debateId;
+    const wsEndpoint = `/ws/debate/${debateId}`;
+
     try {
-      console.log('Attempting to connect to:', import.meta.env.VITE_WEBSOCKET_URL + '/ws/conversation');
-      this.socket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL + '/ws/conversation');
+      console.log('Attempting to connect to:', import.meta.env.VITE_WEBSOCKET_URL + wsEndpoint);
+      this.socket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL + wsEndpoint);
 
       this.socket.onopen = () => {
         console.log('Connected to WebSocket');
@@ -127,9 +137,16 @@ class WebSocketService extends EventEmitter {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
           this.reconnectAttempts++;
           console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
-          setTimeout(() => {
-            this.connect(callbacks);
-          }, this.reconnectTimeout * this.reconnectAttempts);
+          
+          // Only attempt reconnect if we have a debate ID
+          if (this.currentDebateId) {
+            setTimeout(() => {
+              this.connect(callbacks, this.currentDebateId);
+            }, this.reconnectTimeout * this.reconnectAttempts);
+          } else {
+            console.log('Cannot reconnect: Missing debate ID');
+            callbacks.onStatusChange?.('Failed to connect: Missing debate ID');
+          }
         } else {
           console.log('Max reconnection attempts reached');
           callbacks.onStatusChange?.('Failed to connect');
@@ -147,13 +164,19 @@ class WebSocketService extends EventEmitter {
       return;
     }
 
-    const data = {
+    if (!this.currentDebateId) {
+      console.error('Cannot send message: Missing debate ID');
+      return;
+    }
+
+    const data: Record<string, any> = {
       type: 'text',
       message,
       topic,
       mode: 'audio',
       player_id,
-      side
+      side,
+      debate_id: this.currentDebateId
     };
 
     try {
@@ -171,15 +194,21 @@ class WebSocketService extends EventEmitter {
       return;
     }
 
+    if (!this.currentDebateId) {
+      console.error('Cannot send audio: Missing debate ID');
+      return;
+    }
+
     const formData = new FormData();
     const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
     formData.append('audio', audioFile);
 
-    const data = {
+    const data: Record<string, any> = {
       type: 'audio',
       topic: 'The Nature of Consciousness and Reality',
       mode: 'audio', // Request audio generation for voice input
-      player_id
+      player_id,
+      debate_id: this.currentDebateId
     };
 
     try {
@@ -203,9 +232,15 @@ class WebSocketService extends EventEmitter {
 
   // Add this method for manual reconnection
   reconnect(callbacks: WebSocketCallbacks) {
+    if (!this.currentDebateId) {
+      console.error('Cannot reconnect: Missing debate ID');
+      callbacks.onStatusChange?.('Failed to reconnect: Missing debate ID');
+      return;
+    }
+    
     this.reconnectAttempts = 0;
     this.disconnect();
-    this.connect(callbacks);
+    this.connect(callbacks, this.currentDebateId);
   }
 }
 

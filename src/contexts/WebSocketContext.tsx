@@ -9,32 +9,55 @@ interface WebSocketContextType {
   reconnect: () => void;
   isDisabled: boolean;
   pauseConnection: () => void;
+  connectToDebate: (debateId: string) => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
-export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WebSocketProvider: React.FC<{ 
+  children: React.ReactNode;
+  debateId: string;
+}> = ({ children, debateId }) => {
   const [connectionStatus, setConnectionStatus] = useState<string>('Disconnected');
 
   useEffect(() => {
-    // Only connect if the game is not disabled
+    // Only connect if the game is not disabled and we have a debate ID
     if (IS_GAME_DISABLED) {
       setConnectionStatus('Paused');
       return;
     }
+
+    if (!debateId) {
+      setConnectionStatus('Missing debate ID');
+      return;
+    }
     
-    // Single connection established when the app starts
+    // Connect with debate ID
     websocketService.connect({
       onStatusChange: setConnectionStatus,
       onError: (error) => console.error('WebSocket error:', error)
-    });
+    }, debateId);
 
     return () => websocketService.disconnect(true);
-  }, []);
+  }, [debateId]);
 
   const pauseConnection = () => {
     websocketService.disconnect(true);
     setConnectionStatus('Paused');
+  };
+
+  const connectToDebate = (debateId: string) => {
+    if (!debateId) {
+      console.error('Cannot connect to debate: Missing debate ID');
+      setConnectionStatus('Missing debate ID');
+      return;
+    }
+
+    websocketService.disconnect(true);
+    websocketService.connect({
+      onStatusChange: setConnectionStatus,
+      onError: (error) => console.error('WebSocket error:', error)
+    }, debateId);
   };
 
   const value = {
@@ -58,7 +81,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     },
     isDisabled: IS_GAME_DISABLED || connectionStatus === 'Paused',
-    pauseConnection
+    pauseConnection,
+    connectToDebate
   };
 
   return (
