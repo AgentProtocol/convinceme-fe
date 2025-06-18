@@ -4,12 +4,13 @@ import ScoreBar from './ScoreBar';
 import ArgumentsList from './ArgumentsList';
 import ArgumentInput from './ArgumentInput';
 import LoginButton from './LoginButton';
+import TranscriptList from './TranscriptList';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAccount } from "@starknet-react/core";
 import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
 import { IS_GAME_DISABLED } from '../constants';
-import { Argument, ArgumentScore } from '../types';
+import { Argument } from '../types';
 
 interface GameUIProps {
   side1: string;
@@ -157,6 +158,12 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
             side1={side1}
             side2={side2}
           />
+        </div>
+
+        {/* Agent Conversation Transcript */}
+        <div className="bg-surface-light rounded-xl shadow-soft p-3">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Agent Conversation</h3>
+          <TranscriptList />
         </div>
 
         {/* Arguments Feed */}
