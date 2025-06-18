@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ArgumentScoreDisplayProps {
   score: {
@@ -29,7 +29,12 @@ const getScoreColor = (score: number) => {
   return 'text-red-600';
 };
 
-export default function ArgumentScoreDisplay({ score, className = '' }: ArgumentScoreDisplayProps) {
+export default function ArgumentScoreDisplay({
+  score,
+  className = '',
+}: ArgumentScoreDisplayProps) {
+  const [showExplanation, setShowExplanation] = useState(false);
+
   const scoreItems = [
     { label: 'Strength', value: score.strength, emoji: '💪' },
     { label: 'Relevance', value: score.relevance, emoji: '🎯' },
@@ -41,15 +46,26 @@ export default function ArgumentScoreDisplay({ score, className = '' }: Argument
   return (
     <div className={`bg-white rounded-lg p-3 shadow-sm border ${className}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-semibold text-gray-700">Argument Score</span>
+        <span className="text-sm font-semibold text-gray-700">
+          Argument Score
+        </span>
         <div className="flex items-center">
           <span className={`text-lg font-bold ${getScoreColor(score.average)}`}>
             {score.average.toFixed(1)}
           </span>
           <span className="ml-1 text-lg">{getScoreEmoji(score.average)}</span>
+          {score.explanation && (
+            <button
+              onClick={() => setShowExplanation(!showExplanation)}
+              className="ml-2 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xs text-gray-600 hover:text-gray-800 transition-colors"
+              title="View explanation"
+            >
+              ?
+            </button>
+          )}
         </div>
       </div>
-      
+
       <div className="grid grid-cols-5 gap-2 text-xs">
         {scoreItems.map((item) => (
           <div key={item.label} className="text-center">
@@ -61,10 +77,13 @@ export default function ArgumentScoreDisplay({ score, className = '' }: Argument
           </div>
         ))}
       </div>
-      
-      {score.explanation && (
-        <div className="mt-2 text-xs text-gray-600 italic">
-          "{score.explanation}"
+
+      {score.explanation && showExplanation && (
+        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg relative">
+          <div className="absolute -top-2 left-4 w-4 h-4 bg-blue-50 border-l border-t border-blue-200 transform rotate-45"></div>
+          <div className="text-xs text-gray-700 leading-relaxed">
+            "{score.explanation}"
+          </div>
         </div>
       )}
     </div>
