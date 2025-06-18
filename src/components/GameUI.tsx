@@ -6,7 +6,7 @@ import ArgumentInput from './ArgumentInput';
 import LoginButton from './LoginButton';
 import TranscriptList from './TranscriptList';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from '@starknet-react/core';
 import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
 import { IS_GAME_DISABLED } from '../constants';
@@ -65,9 +65,11 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
       // Reset inactivity timer when a new argument is received
       resetInactivityTimer();
 
-      setDebateArguments(prev => {
+      setDebateArguments((prev) => {
         const existingIndex = prev.findIndex(
-          arg => arg.content === argument.content && arg.player_id === argument.player_id
+          (arg) =>
+            arg.content === argument.content &&
+            arg.player_id === argument.player_id
         );
 
         if (existingIndex !== -1) {
@@ -93,7 +95,9 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
   useEffect(() => {
     const fetchArguments = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/debates/${debateId}/arguments`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/debates/${debateId}/arguments`
+        );
         console.log('response', response);
         const data = await response.json();
         console.log('data', data);
@@ -131,10 +135,10 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
         created_at: new Date().toISOString(),
         player_id: address,
         debate_id: debateId,
-        topic: topic
+        topic: topic,
       };
 
-      setDebateArguments(prev => [...prev, newArgument]);
+      setDebateArguments((prev) => [...prev, newArgument]);
     } catch (error) {
       console.error('Failed to send argument:', error);
     }
@@ -142,27 +146,33 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
 
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
+      {/* Debate Room Link */}
+      <div className="text-center mt-4 mb-2">
+        <a
+          href={`${window.location.origin}/debate/${debateId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-4 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-medium text-sm hover:bg-blue-100 hover:underline transition-colors"
+        >
+          {`${window.location.origin}/debate/${debateId}`}
+        </a>
+      </div>
       <InactivityModal isOpen={isInactive} onResume={handleResumeGame} />
-      
-      <ScoreBar
-        side1={side1}
-        side2={side2}
-        className="shrink-0"
-      />
+
+      <ScoreBar side1={side1} side2={side2} className="shrink-0" />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col gap-3 min-h-0">
         {/* Sides Display */}
         <div className="bg-surface-light rounded-xl shadow-soft p-3">
-          <AudioPlayer
-            side1={side1}
-            side2={side2}
-          />
+          <AudioPlayer side1={side1} side2={side2} />
         </div>
 
         {/* Agent Conversation Transcript */}
         <div className="bg-surface-light rounded-xl shadow-soft p-3">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">Agent Conversation</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Agent Conversation
+          </h3>
           <TranscriptList />
         </div>
 
@@ -176,8 +186,8 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
             {!address ? (
               <LoginButton />
             ) : (
-              <ArgumentInput 
-                onSubmit={handleSendArgument} 
+              <ArgumentInput
+                onSubmit={handleSendArgument}
                 side1={side1}
                 side2={side2}
               />
@@ -187,4 +197,4 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
       </div>
     </div>
   );
-} 
+}
