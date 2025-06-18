@@ -202,7 +202,12 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
       )}
       <InactivityModal isOpen={isInactive} onResume={handleResumeGame} />
 
-      <ScoreBar side1={side1} side2={side2} className="shrink-0" />
+      <ScoreBar
+        side1={side1}
+        side2={side2}
+        topic={topic}
+        className="shrink-0"
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col gap-3 min-h-0">

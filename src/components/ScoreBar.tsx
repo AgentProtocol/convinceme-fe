@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
-import websocketService from "../services/websocketService";
-import { STRK_ABI, formatTokenAmount } from "../contracts";
-import { CONTRACT_ADDRESS, STRK_ADDRESS } from "../contracts";
-import { useCall } from "@starknet-react/core";
+import { useEffect, useState } from 'react';
+import websocketService from '../services/websocketService';
+import { STRK_ABI, formatTokenAmount } from '../contracts';
+import { CONTRACT_ADDRESS, STRK_ADDRESS } from '../contracts';
+import { useCall } from '@starknet-react/core';
 
 interface ScoreBarProps {
   // timeLeft: number;
   className?: string;
   side1: string;
   side2: string;
+  topic?: string;
 }
 
 interface FloatingScoreProps {
@@ -40,11 +41,14 @@ export default function ScoreBar({
   // timeLeft,
   side1,
   side2,
-  className = ""
+  className = '',
+  topic,
 }: ScoreBarProps) {
   const [side1Score, setSide1Score] = useState(100);
   const [side2Score, setSide2Score] = useState(100);
-  const [floatingScores, setFloatingScores] = useState<{ id: string; side: 'left' | 'right'; score: number }[]>([]);
+  const [floatingScores, setFloatingScores] = useState<
+    { id: string; side: 'left' | 'right'; score: number }[]
+  >([]);
 
   // Read the contract's STRK balance (prize pot)
   const { data: balanceResult } = useCall({
@@ -53,14 +57,18 @@ export default function ScoreBar({
     functionName: 'balanceOf',
     args: [CONTRACT_ADDRESS],
     watch: true,
-    refetchInterval: 5000
+    refetchInterval: 5000,
   });
-  const prizePot = balanceResult ? formatTokenAmount(BigInt(balanceResult.toString())) : null;
+  const prizePot = balanceResult
+    ? formatTokenAmount(BigInt(balanceResult.toString()))
+    : null;
 
   useEffect(() => {
     const fetchGameScore = async () => {
       try {
-        const res = await fetch(import.meta.env.VITE_API_URL + '/api/gameScore');
+        const res = await fetch(
+          import.meta.env.VITE_API_URL + '/api/gameScore'
+        );
         const data = await res.json();
         console.log('Fetched initial game score:', data);
         setSide1Score(data[side1] ?? 100);
@@ -72,25 +80,38 @@ export default function ScoreBar({
     };
 
     const handleGameScore = (gameScore: Record<string, number>) => {
-      console.log('Received game score update:', gameScore, 'sides:', { side1, side2 });
-      
+      console.log('Received game score update:', gameScore, 'sides:', {
+        side1,
+        side2,
+      });
+
       const newSide1Score = gameScore[side1];
       const newSide2Score = gameScore[side2];
-      
+
       if (newSide1Score !== undefined && newSide2Score !== undefined) {
         // Store previous scores for calculating change
-        setSide1Score(currentSide1Score => {
+        setSide1Score((currentSide1Score) => {
           const change = newSide1Score - currentSide1Score;
           if (change !== 0) {
-            setFloatingScores(prev => [...prev, { id: crypto.randomUUID(), side: 'left', score: change }]);
-            setFloatingScores(prev => [...prev, { id: crypto.randomUUID(), side: 'right', score: -change }]);
+            setFloatingScores((prev) => [
+              ...prev,
+              { id: crypto.randomUUID(), side: 'left', score: change },
+            ]);
+            setFloatingScores((prev) => [
+              ...prev,
+              { id: crypto.randomUUID(), side: 'right', score: -change },
+            ]);
           }
           return newSide1Score;
         });
-        
+
         setSide2Score(newSide2Score);
       } else {
-        console.warn('Game score update missing agent scores:', { gameScore, side1, side2 });
+        console.warn('Game score update missing agent scores:', {
+          gameScore,
+          side1,
+          side2,
+        });
       }
     };
 
@@ -107,26 +128,38 @@ export default function ScoreBar({
 
   return (
     <div className={`py-2 ${className} relative`}>
+      {topic && (
+        <div className="text-center text-base font-bold text-gray-800 mb-2">
+          {topic}
+        </div>
+      )}
       {/* <div className="text-center text-xl font-bold mb-3">
         {formatTime(timeLeft)}
       </div> */}
       <div className="text-center mb-4">
         {prizePot ? (
           <div className="text-center mb-1">
-            <div className="text-xl font-bold text-primary-800">{prizePot} STRK</div>
-            <div className="text-xs text-gray-600 font-medium mt-1 mb-1">Prize pool</div>
+            <div className="text-xl font-bold text-primary-800">
+              {prizePot} STRK
+            </div>
+            <div className="text-xs text-gray-600 font-medium mt-1 mb-1">
+              Prize pool
+            </div>
           </div>
-
         ) : (
           <div className="h-7 w-28 mx-auto bg-gray-200 animate-pulse rounded-lg" />
         )}
       </div>
-      {floatingScores.map(score => (
+      {floatingScores.map((score) => (
         <FloatingScore
           key={score.id}
           side={score.side}
           score={score.score}
-          onComplete={() => setFloatingScores(scores => scores.filter(s => s.id !== score.id))}
+          onComplete={() =>
+            setFloatingScores((scores) =>
+              scores.filter((s) => s.id !== score.id)
+            )
+          }
         />
       ))}
       <div className="h-6 bg-gray-100 rounded-xl overflow-hidden shadow-sm">
@@ -142,9 +175,13 @@ export default function ScoreBar({
         </div>
       </div>
       <div className="flex justify-between mt-1.5 items-center">
-        <div className="font-semibold text-blue-700 text-sm">{Math.round(side1Score)}</div>
-        <div className="font-semibold text-red-700 text-sm">{Math.round(side2Score)}</div>
+        <div className="font-semibold text-blue-700 text-sm">
+          {Math.round(side1Score)}
+        </div>
+        <div className="font-semibold text-red-700 text-sm">
+          {Math.round(side2Score)}
+        </div>
       </div>
     </div>
   );
-} 
+}
