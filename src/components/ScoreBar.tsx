@@ -59,20 +59,39 @@ export default function ScoreBar({
 
   useEffect(() => {
     const fetchGameScore = async () => {
-      const res = await fetch(import.meta.env.VITE_API_URL + '/api/gameScore');
-      const data = await res.json();
-      setSide1Score(data[side1]);
-      setSide2Score(data[side2]);
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + '/api/gameScore');
+        const data = await res.json();
+        console.log('Fetched initial game score:', data);
+        setSide1Score(data[side1] ?? 100);
+        setSide2Score(data[side2] ?? 100);
+      } catch (error) {
+        console.error('Failed to fetch initial game score:', error);
+        // Keep default values of 100
+      }
     };
 
     const handleGameScore = (gameScore: Record<string, number>) => {
-      const change = gameScore[side1] - side1Score
-      setFloatingScores(prev => [...prev, { id: crypto.randomUUID(), side: 'left', score: change }]);
-      setFloatingScores(prev => [...prev, { id: crypto.randomUUID(), side: 'right', score: -change }]);
-
-
-      setSide1Score(gameScore[side1]);
-      setSide2Score(gameScore[side2]);
+      console.log('Received game score update:', gameScore, 'sides:', { side1, side2 });
+      
+      const newSide1Score = gameScore[side1];
+      const newSide2Score = gameScore[side2];
+      
+      if (newSide1Score !== undefined && newSide2Score !== undefined) {
+        // Store previous scores for calculating change
+        setSide1Score(currentSide1Score => {
+          const change = newSide1Score - currentSide1Score;
+          if (change !== 0) {
+            setFloatingScores(prev => [...prev, { id: crypto.randomUUID(), side: 'left', score: change }]);
+            setFloatingScores(prev => [...prev, { id: crypto.randomUUID(), side: 'right', score: -change }]);
+          }
+          return newSide1Score;
+        });
+        
+        setSide2Score(newSide2Score);
+      } else {
+        console.warn('Game score update missing agent scores:', { gameScore, side1, side2 });
+      }
     };
 
     fetchGameScore();
@@ -81,7 +100,7 @@ export default function ScoreBar({
     return () => {
       websocketService.off('game_score', handleGameScore);
     };
-  }, []);
+  }, [side1, side2]); // Re-run when agent names change
 
   // Calculate score bar percentage
   const scorePercentage = (side1Score / (side1Score + side2Score)) * 100;

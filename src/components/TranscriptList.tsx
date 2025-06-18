@@ -1,11 +1,24 @@
 import { useState, useEffect } from "react";
 import websocketService from '../services/websocketService';
+import ArgumentScoreDisplay from './ArgumentScoreDisplay';
 
 export interface Transcript {
   id: number;
   transcript: string;
   username: string;
   createdAt: Date;
+  isPlayer?: boolean;
+  scores?: {
+    argument?: {
+      strength: number;
+      relevance: number;
+      logic: number;
+      truth: number;
+      humor: number;
+      average: number;
+      explanation?: string;
+    };
+  };
 }
 
 export default function TranscriptList() {
@@ -32,46 +45,24 @@ export default function TranscriptList() {
           <div key={transcript.id} className="p-4 text-center">
             <div className="mb-2 font-semibold text-gray-700">
               {transcript.username}
+              {transcript.isPlayer && (
+                <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  Player
+                </span>
+              )}
             </div>
-            <p className="text-gray-800">
+            <p className="text-gray-800 mb-3">
               {transcript.transcript}
             </p>
+            {transcript.scores?.argument && (
+              <ArgumentScoreDisplay 
+                score={transcript.scores.argument} 
+                className="max-w-md mx-auto"
+              />
+            )}
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-// const demoTranscripts: Transcript[] = [
-//   {
-//     id: 1,
-//     transcript: "I firmly believe pineapple belongs on pizza. The sweet and savory combination is unmatched!",
-//     username: "PizzaPhilosopher",
-//     createdAt: new Date(),
-//   },
-//   {
-//     id: 2,
-//     transcript: "That's culinary blasphemy! Pizza is meant to be savory. What's next, putting chocolate on spaghetti?",
-//     username: "ChefLogic",
-//     createdAt: new Date(),
-//   },
-//   {
-//     id: 3,
-//     transcript: "Actually, the combination of sweet and savory has historical precedent. Hawaiian pizza was invented in Canada in 1962!",
-//     username: "PizzaPhilosopher",
-//     createdAt: new Date(),
-//   },
-//   {
-//     id: 4,
-//     transcript: "Just because something was invented doesn't make it right. The Italians would be horrified!",
-//     username: "ChefLogic", 
-//     createdAt: new Date(),
-//   },
-//   {
-//     id: 5,
-//     transcript: "Food evolves! Pizza itself has evolved from its Neapolitan origins. Why stop innovating now?",
-//     username: "PizzaPhilosopher",
-//     createdAt: new Date(),
-//   }
-// ]

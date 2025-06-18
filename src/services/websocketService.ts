@@ -91,7 +91,9 @@ class WebSocketService extends EventEmitter {
                 id: Date.now(),
                 transcript: data.content,
                 username: data.agent,
-                createdAt: new Date()
+                createdAt: new Date(),
+                isPlayer: data.isPlayer,
+                scores: data.scores
               });
               break;
               
