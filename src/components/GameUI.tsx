@@ -181,22 +181,25 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
             borderRadius: 12,
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             padding: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
           <img src={qrUrl} alt="QR code for this page" width={96} height={96} />
+          <span
+            style={{
+              fontSize: 12,
+              color: '#1e3a8a',
+              marginTop: 4,
+              textAlign: 'center',
+              fontWeight: 500,
+            }}
+          >
+            Scan to play
+          </span>
         </div>
       )}
-      {/* Debate Room Link */}
-      <div className="text-center mt-4 mb-2">
-        <a
-          href={`${window.location.origin}/debate/${debateId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block px-4 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-medium text-sm hover:bg-blue-100 hover:underline transition-colors"
-        >
-          {`${window.location.origin}/debate/${debateId}`}
-        </a>
-      </div>
       <InactivityModal isOpen={isInactive} onResume={handleResumeGame} />
 
       <ScoreBar side1={side1} side2={side2} className="shrink-0" />
