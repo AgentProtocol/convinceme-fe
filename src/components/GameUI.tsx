@@ -11,6 +11,8 @@ import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
 import { IS_GAME_DISABLED } from '../constants';
 import { Argument } from '../types';
+// @ts-expect-error no types for qrcode
+import QRCode from 'qrcode';
 
 interface GameUIProps {
   side1: string;
@@ -25,6 +27,7 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
   const { sendMessage, pauseConnection, reconnect } = useWebSocket();
   const [isInactive, setIsInactive] = useState(false);
   const inactivityTimerRef = useRef<number | null>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
 
   const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -116,6 +119,25 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
     fetchArguments();
   }, [debateId]);
 
+  useEffect(() => {
+    const debateUrl = `${window.location.origin}/debate/${debateId}`;
+    QRCode.toDataURL(
+      debateUrl,
+      {
+        width: 96,
+        margin: 1,
+        color: {
+          dark: '#1e3a8a',
+          light: '#ffffff',
+        },
+        errorCorrectionLevel: 'H',
+      },
+      (err: unknown, url: string | undefined) => {
+        if (!err && url) setQrUrl(url);
+      }
+    );
+  }, [debateId]);
+
   const handleSendArgument = (argument: string, side: string) => {
     if (!address || !argument.trim() || !debateId) return;
 
@@ -146,6 +168,24 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
 
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
+      {/* QR Code in top right corner */}
+      {qrUrl && (
+        <div
+          id="qr-code-corner"
+          style={{
+            position: 'fixed',
+            top: 16,
+            right: 16,
+            zIndex: 50,
+            background: 'white',
+            borderRadius: 12,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            padding: 4,
+          }}
+        >
+          <img src={qrUrl} alt="QR code for this page" width={96} height={96} />
+        </div>
+      )}
       {/* Debate Room Link */}
       <div className="text-center mt-4 mb-2">
         <a
