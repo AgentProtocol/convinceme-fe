@@ -44,8 +44,8 @@ export default function ScoreBar({
   className = '',
   topic,
 }: ScoreBarProps) {
-  const [side1Score, setSide1Score] = useState(100);
-  const [side2Score, setSide2Score] = useState(100);
+  const [side1Score, setSide1Score] = useState(10);
+  const [side2Score, setSide2Score] = useState(10);
   const [floatingScores, setFloatingScores] = useState<
     { id: string; side: 'left' | 'right'; score: number }[]
   >([]);
@@ -71,8 +71,8 @@ export default function ScoreBar({
         );
         const data = await res.json();
         console.log('Fetched initial game score:', data);
-        setSide1Score(data[side1] ?? 100);
-        setSide2Score(data[side2] ?? 100);
+        setSide1Score(data[side1] ?? 10);
+        setSide2Score(data[side2] ?? 10);
       } catch (error) {
         console.error('Failed to fetch initial game score:', error);
         // Keep default values of 100

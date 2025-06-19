@@ -28,6 +28,7 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
   const [showWinScreen, setShowWinScreen] = useState(false);
   const [winnerSide, setWinnerSide] = useState<string>('');
   const [loserSide, setLoserSide] = useState<string>('');
+  const [winnerPlayer, setWinnerPlayer] = useState<{ address: string; email?: string } | undefined>();
   const { sendMessage, pauseConnection, reconnect } = useWebSocket();
   const [isInactive, setIsInactive] = useState(false);
   const inactivityTimerRef = useRef<number | null>(null);
@@ -110,11 +111,21 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
         // Side 2 wins (side 1's HP reached 0)
         setWinnerSide(side2);
         setLoserSide(side1);
+        // For now, set current player as winner if they have an address
+        // TODO: Improve logic to determine actual winning player based on side/arguments
+        if (address) {
+          setWinnerPlayer({ address });
+        }
         setShowWinScreen(true);
       } else if (side2Score <= 0 && !showWinScreen) {
         // Side 1 wins (side 2's HP reached 0)
         setWinnerSide(side1);
         setLoserSide(side2);
+        // For now, set current player as winner if they have an address
+        // TODO: Improve logic to determine actual winning player based on side/arguments
+        if (address) {
+          setWinnerPlayer({ address });
+        }
         setShowWinScreen(true);
       }
     };
@@ -129,7 +140,7 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
       websocketService.off('transcript', handleNewTranscript);
       websocketService.off('game_score', handleGameScore);
     };
-  }, [side1, side2, showWinScreen, resetInactivityTimer]);
+  }, [side1, side2, showWinScreen, resetInactivityTimer, address]);
 
   useEffect(() => {
     const fetchArguments = async () => {
@@ -228,6 +239,7 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
         <WinScreen
           winnerSide={winnerSide}
           loserSide={loserSide}
+          winnerPlayer={winnerPlayer}
           onClose={handleCloseWinScreen}
           onReturnToLobby={handleReturnToLobby}
         />

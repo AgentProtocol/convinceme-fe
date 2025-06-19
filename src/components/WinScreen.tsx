@@ -3,12 +3,17 @@ import { useEffect, useState } from 'react';
 interface WinScreenProps {
   readonly winnerSide: string;
   readonly loserSide: string;
+  readonly winnerPlayer?: {
+    address: string;
+    email?: string;
+  };
   readonly onClose: () => void;
   readonly onReturnToLobby: () => void;
 }
 
-export default function WinScreen({ winnerSide, loserSide, onClose, onReturnToLobby }: WinScreenProps) {
+export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose, onReturnToLobby }: WinScreenProps) {
   const [showConfetti, setShowConfetti] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   
   // Generate stable confetti positions once
   const [confettiItems] = useState(() => 
@@ -22,12 +27,42 @@ export default function WinScreen({ winnerSide, loserSide, onClose, onReturnToLo
 
   useEffect(() => {
     // Hide confetti after 3 seconds
-    const timer = setTimeout(() => {
+    const confettiTimer = setTimeout(() => {
       setShowConfetti(false);
     }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
+    // 5-minute countdown timer with auto-redirect
+    const countdownTimer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // Time's up, redirect to home
+          onReturnToLobby();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(confettiTimer);
+      clearInterval(countdownTimer);
+    };
+  }, [onReturnToLobby]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Format address to show first 6 and last 4 characters
+  const formatAddress = (address: string) => {
+    if (!address || address.length < 10) {
+      return address;
+    }
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -63,17 +98,36 @@ export default function WinScreen({ winnerSide, loserSide, onClose, onReturnToLo
           <div className="text-xl font-semibold text-emerald-600 mb-2">
             🎉 {winnerSide} Wins! 🎉
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 mb-3">
             Better luck next time, {loserSide}
           </div>
+
+          {/* Winner Player Information */}
+          {winnerPlayer && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+              <div className="font-medium text-blue-900 mb-1">Winner Details:</div>
+              <div className="text-blue-800">
+                <div>Address: <span className="font-mono">{formatAddress(winnerPlayer.address)}</span></div>
+                {winnerPlayer.email && (
+                  <div>Email: {winnerPlayer.email}</div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Victory Message */}
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
           <p className="text-emerald-800 text-sm">
             Congratulations! The arguments were compelling and the debate was intense. 
             The winning side demonstrated superior logic, relevance, and persuasive power.
           </p>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
+          <div className="text-xs text-gray-600 mb-1">Auto-redirect in:</div>
+          <div className="text-lg font-mono font-bold text-gray-800">{formatTime(timeLeft)}</div>
         </div>
 
         {/* Action Buttons */}
