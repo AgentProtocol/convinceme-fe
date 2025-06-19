@@ -93,13 +93,15 @@ export default function ScoreBar({
         setSide1Score((currentSide1Score) => {
           const change = newSide1Score - currentSide1Score;
           if (change !== 0) {
+            // Cap the HP change to be more reasonable (max ±10 points per change)
+            const cappedChange = Math.max(-10, Math.min(10, change));
             setFloatingScores((prev) => [
               ...prev,
-              { id: crypto.randomUUID(), side: 'left', score: change },
+              { id: crypto.randomUUID(), side: 'left', score: cappedChange },
             ]);
             setFloatingScores((prev) => [
               ...prev,
-              { id: crypto.randomUUID(), side: 'right', score: -change },
+              { id: crypto.randomUUID(), side: 'right', score: -cappedChange },
             ]);
           }
           return newSide1Score;

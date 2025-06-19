@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface ArgumentScoreDisplayProps {
   score: {
@@ -44,20 +44,20 @@ export default function ArgumentScoreDisplay({
   ];
 
   return (
-    <div className={`bg-white rounded-lg p-3 shadow-sm border ${className}`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-semibold text-gray-700">
-          Argument Score
+    <div className={`bg-white rounded-md p-2 shadow-sm border ${className}`}>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-medium text-gray-600">
+          Score
         </span>
         <div className="flex items-center">
-          <span className={`text-lg font-bold ${getScoreColor(score.average)}`}>
+          <span className={`text-sm font-semibold ${getScoreColor(score.average)}`}>
             {score.average.toFixed(1)}
           </span>
-          <span className="ml-1 text-lg">{getScoreEmoji(score.average)}</span>
+          <span className="ml-1 text-sm">{getScoreEmoji(score.average)}</span>
           {score.explanation && (
             <button
               onClick={() => setShowExplanation(!showExplanation)}
-              className="ml-2 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xs text-gray-600 hover:text-gray-800 transition-colors"
+              className="ml-1 w-4 h-4 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xs text-gray-600 hover:text-gray-800 transition-colors"
               title="View explanation"
             >
               ?
@@ -66,21 +66,21 @@ export default function ArgumentScoreDisplay({
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-2 text-xs">
+      <div className="grid grid-cols-5 gap-1 text-xs">
         {scoreItems.map((item) => (
           <div key={item.label} className="text-center">
-            <div className="text-lg mb-1">{item.emoji}</div>
-            <div className={`font-semibold ${getScoreColor(item.value)}`}>
+            <div className="text-sm mb-0.5">{item.emoji}</div>
+            <div className={`font-medium text-xs ${getScoreColor(item.value)}`}>
               {item.value.toFixed(1)}
             </div>
-            <div className="text-gray-500 text-xs">{item.label}</div>
+            <div className="text-gray-400 text-xs leading-tight">{item.label}</div>
           </div>
         ))}
       </div>
 
       {score.explanation && showExplanation && (
-        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg relative">
-          <div className="absolute -top-2 left-4 w-4 h-4 bg-blue-50 border-l border-t border-blue-200 transform rotate-45"></div>
+        <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md relative">
+          <div className="absolute -top-1 left-3 w-2 h-2 bg-blue-50 border-l border-t border-blue-200 transform rotate-45"></div>
           <div className="text-xs text-gray-700 leading-relaxed">
             "{score.explanation}"
           </div>

@@ -13,7 +13,7 @@ class WebSocketService extends EventEmitter {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectTimeout = 1000; // Start with 1 second
-  private heartbeatInterval: number | null = null;
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private pongReceived = false;
   private currentDebateId: string = '';
 

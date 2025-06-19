@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Argument } from './GameUI';
+import { Argument } from '../types';
 
 interface ArgumentsListProps {
   arguments: Argument[];

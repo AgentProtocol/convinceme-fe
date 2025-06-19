@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScoreBar from './ScoreBar';
-import ArgumentsList from './ArgumentsList';
+import UnifiedChatList from './UnifiedChatList';
 import ArgumentInput from './ArgumentInput';
 import LoginButton from './LoginButton';
-import TranscriptList from './TranscriptList';
+import WinScreen from './WinScreen';
+import { Transcript } from './TranscriptList';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAccount } from '@starknet-react/core';
 import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
 import { IS_GAME_DISABLED } from '../constants';
 import { Argument } from '../types';
-// @ts-expect-error no types for qrcode
 import QRCode from 'qrcode';
 
 interface GameUIProps {
@@ -21,9 +21,13 @@ interface GameUIProps {
   debateId: string;
 }
 
-export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
+export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameUIProps>) {
   const { address } = useAccount();
   const [debateArguments, setDebateArguments] = useState<Argument[]>([]);
+  const [transcripts, setTranscripts] = useState<Transcript[]>([]);
+  const [showWinScreen, setShowWinScreen] = useState(false);
+  const [winnerSide, setWinnerSide] = useState<string>('');
+  const [loserSide, setLoserSide] = useState<string>('');
   const { sendMessage, pauseConnection, reconnect } = useWebSocket();
   const [isInactive, setIsInactive] = useState(false);
   const inactivityTimerRef = useRef<number | null>(null);
@@ -32,8 +36,10 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
 
   const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-  const resetInactivityTimer = () => {
-    if (IS_GAME_DISABLED) return;
+  const resetInactivityTimer = useCallback(() => {
+    if (IS_GAME_DISABLED) {
+      return;
+    }
     // Clear existing timer
     if (inactivityTimerRef.current) {
       window.clearTimeout(inactivityTimerRef.current);
@@ -44,7 +50,7 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
       setIsInactive(true);
       pauseConnection();
     }, INACTIVITY_TIMEOUT);
-  };
+  }, [pauseConnection, INACTIVITY_TIMEOUT]);
 
   const handleResumeGame = () => {
     setIsInactive(false);
@@ -62,7 +68,7 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
         window.clearTimeout(inactivityTimerRef.current);
       }
     };
-  }, []);
+  }, [resetInactivityTimer]);
 
   useEffect(() => {
     const handleNewArgument = (argument: Argument) => {
@@ -88,13 +94,42 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
       });
     };
 
-    websocketService.on('argument', handleNewArgument);
+    const handleNewTranscript = (newTranscript: Transcript) => {
+      setTranscripts(prev => [...prev, newTranscript]);
+    };
 
-    // Cleanup listener on unmount
+    // Handle HP/score changes when messages are scored
+    const handleGameScore = (gameScore: Record<string, number>) => {
+      console.log('Game score updated:', gameScore);
+      
+      // Check for win condition (HP reaches 0 or below)
+      const side1Score = gameScore[side1] ?? 100;
+      const side2Score = gameScore[side2] ?? 100;
+      
+      if (side1Score <= 0 && !showWinScreen) {
+        // Side 2 wins (side 1's HP reached 0)
+        setWinnerSide(side2);
+        setLoserSide(side1);
+        setShowWinScreen(true);
+      } else if (side2Score <= 0 && !showWinScreen) {
+        // Side 1 wins (side 2's HP reached 0)
+        setWinnerSide(side1);
+        setLoserSide(side2);
+        setShowWinScreen(true);
+      }
+    };
+
+    websocketService.on('argument', handleNewArgument);
+    websocketService.on('transcript', handleNewTranscript);
+    websocketService.on('game_score', handleGameScore);
+
+    // Cleanup listeners on unmount
     return () => {
       websocketService.off('argument', handleNewArgument);
+      websocketService.off('transcript', handleNewTranscript);
+      websocketService.off('game_score', handleGameScore);
     };
-  }, [side1, side2]);
+  }, [side1, side2, showWinScreen, resetInactivityTimer]);
 
   useEffect(() => {
     const fetchArguments = async () => {
@@ -159,7 +194,9 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
   }, [debateId]);
 
   const handleSendArgument = (argument: string, side: string) => {
-    if (!address || !argument.trim() || !debateId) return;
+    if (!address || !argument.trim() || !debateId) {
+      return;
+    }
 
     try {
       // Debate ID is required
@@ -168,26 +205,34 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
       // Reset inactivity timer when user sends an argument
       resetInactivityTimer();
 
-      // Create a temporary local representation of the argument
-      // Note: The backend will assign the real ID and possibly add scores
-      const newArgument: Argument = {
-        id: Math.floor(Math.random() * 1000000) * 10000, // Temporary ID
-        content: argument,
-        side: side,
-        created_at: new Date().toISOString(),
-        player_id: address,
-        debate_id: debateId,
-        topic: topic,
-      };
-
-      setDebateArguments((prev) => [...prev, newArgument]);
+      // Don't add temporary argument - only show scored arguments
+      // The argument will appear in the feed once it's been scored by the backend
     } catch (error) {
       console.error('Failed to send argument:', error);
     }
   };
 
+  const handleCloseWinScreen = () => {
+    setShowWinScreen(false);
+  };
+
+  const handleReturnToLobby = () => {
+    // Navigate back to lobby (you may want to use router here)
+    window.location.href = '/';
+  };
+
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
+      {/* Win Screen Modal */}
+      {showWinScreen && (
+        <WinScreen
+          winnerSide={winnerSide}
+          loserSide={loserSide}
+          onClose={handleCloseWinScreen}
+          onReturnToLobby={handleReturnToLobby}
+        />
+      )}
+
       {/* QR Code in top right corner */}
       {qrUrl && (
         <div
@@ -258,18 +303,14 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
           <AudioPlayer side1={side1} side2={side2} />
         </div>
 
-        {/* Agent Conversation Transcript */}
-        <div className="bg-surface-light rounded-xl shadow-soft p-3">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Agent Conversation
-          </h3>
-          <TranscriptList />
-        </div>
-
-        {/* Arguments Feed */}
+        {/* Unified Chat - All Messages */}
         <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
           <div className="flex-1 min-h-0">
-            <ArgumentsList arguments={debateArguments} side1={side1} />
+            <UnifiedChatList 
+              arguments={debateArguments} 
+              transcripts={transcripts}
+              side1={side1} 
+            />
           </div>
 
           <div className="p-3 bg-surface-dark border-t border-gray-100">
