@@ -28,6 +28,7 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
   const [isInactive, setIsInactive] = useState(false);
   const inactivityTimerRef = useRef<number | null>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [feedbackQrUrl, setFeedbackQrUrl] = useState<string | null>(null);
 
   const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -136,6 +137,25 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
         if (!err && url) setQrUrl(url);
       }
     );
+
+    // Feedback QR code
+    const feedbackUrl =
+      'https://docs.google.com/forms/d/1Tfqk3GeH_A4sfOPZSB5zq5Z3GTlfKFC85O2yNsNFHRo/viewform?edit_requested=true';
+    QRCode.toDataURL(
+      feedbackUrl,
+      {
+        width: 96,
+        margin: 1,
+        color: {
+          dark: '#1e3a8a',
+          light: '#ffffff',
+        },
+        errorCorrectionLevel: 'H',
+      },
+      (err: unknown, url: string | undefined) => {
+        if (!err && url) setFeedbackQrUrl(url);
+      }
+    );
   }, [debateId]);
 
   const handleSendArgument = (argument: string, side: string) => {
@@ -198,6 +218,28 @@ export default function GameUI({ side1, side2, topic, debateId }: GameUIProps) {
           >
             Scan to play
           </span>
+          {feedbackQrUrl && (
+            <>
+              <div style={{ height: 16 }} />
+              <img
+                src={feedbackQrUrl}
+                alt="Feedback QR code"
+                width={96}
+                height={96}
+              />
+              <span
+                style={{
+                  fontSize: 12,
+                  color: '#1e3a8a',
+                  marginTop: 4,
+                  textAlign: 'center',
+                  fontWeight: 500,
+                }}
+              >
+                Feedback
+              </span>
+            </>
+          )}
         </div>
       )}
       <InactivityModal isOpen={isInactive} onResume={handleResumeGame} />
