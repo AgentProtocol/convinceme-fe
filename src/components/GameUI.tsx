@@ -122,7 +122,8 @@ export default function GameUI({
         // For now, set current player as winner if they have an address
         // TODO: Improve logic to determine actual winning player based on side/arguments
         if (address) {
-          setWinnerPlayer({ address });
+          const displayName = getUserDisplayName() || address;
+          setWinnerPlayer({ address: displayName });
         }
         setShowWinScreen(true);
       } else if (side2Score <= 0 && !showWinScreen) {
@@ -132,7 +133,8 @@ export default function GameUI({
         // For now, set current player as winner if they have an address
         // TODO: Improve logic to determine actual winning player based on side/arguments
         if (address) {
-          setWinnerPlayer({ address });
+          const displayName = getUserDisplayName() || address;
+          setWinnerPlayer({ address: displayName });
         }
         setShowWinScreen(true);
       }
@@ -212,14 +214,32 @@ export default function GameUI({
     );
   }, [debateId]);
 
+  // Helper function to get user's display name
+  const getUserDisplayName = () => {
+    if (!user) return address;
+
+    // Prioritize Twitter username, then other social usernames, then email
+    return (
+      user.twitter?.username ||
+      user.discord?.username ||
+      user.github?.username ||
+      user.google?.email ||
+      user.email?.address ||
+      address ||
+      'User'
+    );
+  };
+
   const handleSendArgument = (argument: string, side: string) => {
     if (!address || !argument.trim() || !debateId) {
       return;
     }
 
     try {
-      // Debate ID is required
-      sendMessage(argument, topic, address, side);
+      const displayName = getUserDisplayName();
+
+      // Debate ID is required - send with display name
+      sendMessage(argument, topic, address, side, displayName);
 
       // Reset inactivity timer when user sends an argument
       resetInactivityTimer();

@@ -15,13 +15,21 @@ interface WinScreenProps {
   readonly side1: string;
 }
 
-export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose, onReturnToLobby, onRestartMatch, side1 }: WinScreenProps) {
+export default function WinScreen({
+  winnerSide,
+  loserSide,
+  winnerPlayer,
+  onClose,
+  onReturnToLobby,
+  onRestartMatch,
+  side1,
+}: WinScreenProps) {
   const winnerAvatar = winnerSide === side1 ? agent1Image : agent2Image;
   const [showConfetti, setShowConfetti] = useState(true);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-  
+
   // Generate stable confetti positions once
-  const [confettiItems] = useState(() => 
+  const [confettiItems] = useState(() =>
     Array.from({ length: 50 }, (_, i) => ({
       id: `confetti-${i}`,
       left: Math.random() * 100,
@@ -61,14 +69,6 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Format address to show first 6 and last 4 characters
-  const formatAddress = (address: string) => {
-    if (!address || address.length < 10) {
-      return address;
-    }
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       {/* Confetti animation */}
@@ -94,20 +94,20 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
         {/* Winner Avatar */}
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <img 
-              src={winnerAvatar} 
+            <img
+              src={winnerAvatar}
               alt={`${winnerSide} avatar`}
               className="w-24 h-24 rounded-full object-cover border-4 border-yellow-400 shadow-lg"
             />
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-lg">🏆</div>
+            <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-lg">
+              🏆
+            </div>
           </div>
         </div>
-        
+
         {/* Winner Announcement */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Victory!
-        </h1>
-        
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Victory!</h1>
+
         <div className="mb-6">
           <div className="text-xl font-semibold text-emerald-600 mb-2">
             {winnerSide} Wins!
@@ -119,12 +119,15 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
           {/* Winner Player Information */}
           {winnerPlayer && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-              <div className="font-medium text-blue-900 mb-1">Winner Details:</div>
+              <div className="font-medium text-blue-900 mb-1">
+                Winner Details:
+              </div>
               <div className="text-blue-800">
-                <div>Address: <span className="font-mono">{formatAddress(winnerPlayer.address)}</span></div>
-                {winnerPlayer.email && (
-                  <div>Email: {winnerPlayer.email}</div>
-                )}
+                <div>
+                  Username:{' '}
+                  <span className="font-mono">{winnerPlayer.address}</span>
+                </div>
+                {winnerPlayer.email && <div>Email: {winnerPlayer.email}</div>}
               </div>
             </div>
           )}
@@ -133,15 +136,18 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
         {/* Victory Message */}
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
           <p className="text-emerald-800 text-sm">
-            Congratulations! The arguments were compelling and the debate was intense. 
-            The winning side demonstrated superior logic, relevance, and persuasive power.
+            Congratulations! The arguments were compelling and the debate was
+            intense. The winning side demonstrated superior logic, relevance,
+            and persuasive power.
           </p>
         </div>
 
         {/* Countdown Timer */}
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
           <div className="text-xs text-gray-600 mb-1">Auto-redirect in:</div>
-          <div className="text-lg font-mono font-bold text-gray-800">{formatTime(timeLeft)}</div>
+          <div className="text-lg font-mono font-bold text-gray-800">
+            {formatTime(timeLeft)}
+          </div>
         </div>
 
         {/* Action Buttons */}
@@ -152,14 +158,14 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
           >
             Start New Debate
           </button>
-          
+
           <button
             onClick={onReturnToLobby}
             className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-colors font-medium shadow-sm"
           >
             Return to Lobby
           </button>
-          
+
           <button
             onClick={onClose}
             className="w-full px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm"
