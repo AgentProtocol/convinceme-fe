@@ -240,6 +240,11 @@ export default function GameUI({
     window.location.href = '/';
   };
 
+  const handleRestartMatch = () => {
+    // Navigate to topic selection page to start a new debate
+    window.location.href = '/topics';
+  };
+
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
       {/* Win Screen Modal */}
@@ -250,6 +255,8 @@ export default function GameUI({
           winnerPlayer={winnerPlayer}
           onClose={handleCloseWinScreen}
           onReturnToLobby={handleReturnToLobby}
+          onRestartMatch={handleRestartMatch}
+          side1={side1}
         />
       )}
 
