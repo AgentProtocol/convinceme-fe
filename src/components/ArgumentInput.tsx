@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useAccount, useCall, useSendTransaction } from '@starknet-react/core';
-import { CONTRACT_ADDRESS, STRK_ADDRESS, CONTRACT_ABI, formatTokenAmount } from '../contracts';
+import { usePrivy } from '@privy-io/react-auth';
 import { IS_GAME_DISABLED } from '../constants';
 
 interface ArgumentInputProps {
@@ -10,59 +9,25 @@ interface ArgumentInputProps {
   side2: string;
 }
 
-export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: ArgumentInputProps) {
+export default function ArgumentInput({
+  onSubmit,
+  disabled,
+  side1,
+  side2,
+}: ArgumentInputProps) {
   const [newArgument, setNewArgument] = useState('');
-  const { address } = useAccount();
+  const { user } = usePrivy();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Read the current action cost
-  const { refetch: refetchActionCost, data: actionCostResult } = useCall({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: 'action_cost',
-    args: [],
-    watch: true,
-    refetchInterval: 5000
-  });
-
-  // Setup transaction sender
-  const { sendAsync: sendTransaction } = useSendTransaction({
-    calls: []
-  });
+  const address = user?.id || user?.email?.address || user?.wallet?.address;
 
   const handleSubmit = async (selectedSide: string) => {
     if (!newArgument.trim() || !address || IS_GAME_DISABLED) return;
 
     try {
       setIsSubmitting(true);
-      if (!import.meta.env.VITE_SKIP_TRANSACTIONS) {
-        const { data: actionCost } = await refetchActionCost();
-        if (!actionCost) {
-          throw new Error('Failed to fetch action cost');
-        }
 
-        // Prepare transaction calls
-        const calls = [
-          {
-            contractAddress: STRK_ADDRESS,
-            entrypoint: 'approve',
-            calldata: [CONTRACT_ADDRESS, actionCost.toString(), "0"]
-          },
-          {
-            contractAddress: CONTRACT_ADDRESS,
-            entrypoint: 'buyin',
-            calldata: []
-          }
-        ];
-
-        // Send transactions
-        const result = await sendTransaction(calls);
-        if (!result.transaction_hash) {
-          throw new Error('Transaction failed');
-        }
-      }
-
-      // If transactions succeed, submit the argument
+      // Submit the argument directly (no blockchain transactions)
       onSubmit(newArgument, selectedSide);
       setNewArgument('');
     } catch (error) {
@@ -72,9 +37,12 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
     }
   };
 
-  const isDisabled = disabled || !newArgument.trim() || !address || isSubmitting || IS_GAME_DISABLED;
-  const buyInAmount = actionCostResult ? formatTokenAmount(BigInt(actionCostResult.toString())) : null;
-  const buyInText = buyInAmount ? `${buyInAmount} STRK` : '';
+  const isDisabled =
+    disabled ||
+    !newArgument.trim() ||
+    !address ||
+    isSubmitting ||
+    IS_GAME_DISABLED;
 
   return (
     <div className="flex flex-col gap-3">
@@ -84,18 +52,9 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
           type="text"
           value={newArgument}
           onChange={(e) => setNewArgument(e.target.value)}
-          placeholder={"Add your argument to the debate..."}
-          className={`w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 transition-all placeholder-gray-400 disabled:bg-gray-50 ${buyInText ? 'pr-[120px]' : ''}`}
+          placeholder={'Add your argument to the debate...'}
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 transition-all placeholder-gray-400 disabled:bg-gray-50"
         />
-        {buyInAmount && !IS_GAME_DISABLED ? (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-white px-1">
-            {buyInText}
-          </div>
-        ) : !IS_GAME_DISABLED ? (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="h-4 w-16 bg-gray-200 animate-pulse rounded" />
-          </div>
-        ) : null}
       </div>
       <div className="flex gap-3">
         <button
@@ -115,4 +74,4 @@ export default function ArgumentInput({ onSubmit, disabled, side1, side2 }: Argu
       </div>
     </div>
   );
-} 
+}

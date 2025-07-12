@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 import websocketService from '../services/websocketService';
-import { STRK_ABI, formatTokenAmount } from '../contracts';
-import { CONTRACT_ADDRESS, STRK_ADDRESS } from '../contracts';
-import { useCall } from '@starknet-react/core';
 
 interface ScoreBarProps {
   // timeLeft: number;
@@ -49,19 +46,6 @@ export default function ScoreBar({
   const [floatingScores, setFloatingScores] = useState<
     { id: string; side: 'left' | 'right'; score: number }[]
   >([]);
-
-  // Read the contract's STRK balance (prize pot)
-  const { data: balanceResult } = useCall({
-    address: STRK_ADDRESS,
-    abi: STRK_ABI,
-    functionName: 'balanceOf',
-    args: [CONTRACT_ADDRESS],
-    watch: true,
-    refetchInterval: 5000,
-  });
-  const prizePot = balanceResult
-    ? formatTokenAmount(BigInt(balanceResult.toString()))
-    : null;
 
   useEffect(() => {
     const fetchGameScore = async () => {
@@ -138,20 +122,6 @@ export default function ScoreBar({
       {/* <div className="text-center text-xl font-bold mb-3">
         {formatTime(timeLeft)}
       </div> */}
-      <div className="text-center mb-4">
-        {prizePot ? (
-          <div className="text-center mb-1">
-            <div className="text-xl font-bold text-primary-800">
-              {prizePot} STRK
-            </div>
-            <div className="text-xs text-gray-600 font-medium mt-1 mb-1">
-              Prize pool
-            </div>
-          </div>
-        ) : (
-          <div className="h-7 w-28 mx-auto bg-gray-200 animate-pulse rounded-lg" />
-        )}
-      </div>
       {floatingScores.map((score) => (
         <FloatingScore
           key={score.id}

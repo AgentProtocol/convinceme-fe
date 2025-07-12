@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ConvinceMe_logo from '../assets/ConvinceMe_logo.png';
 import { fetchTopics, createDebate } from '../services/apiService';
 import { Topic } from '../types';
-import { useAccount } from '@starknet-react/core';
+import { usePrivy } from '@privy-io/react-auth';
 
 export default function TopicSelectionPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -13,7 +13,9 @@ export default function TopicSelectionPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreatingDebate, setIsCreatingDebate] = useState(false);
   const navigate = useNavigate();
-  const { address } = useAccount();
+  const { user } = usePrivy();
+
+  const address = user?.id || user?.email?.address || user?.wallet?.address;
 
   useEffect(() => {
     const loadTopics = async () => {
@@ -44,7 +46,7 @@ export default function TopicSelectionPage() {
       setIsCreatingDebate(true);
       const response = await createDebate({
         topic_id: selectedTopic,
-        created_by: address || undefined
+        created_by: address || undefined,
       });
 
       // Navigate to the newly created debate
@@ -56,9 +58,10 @@ export default function TopicSelectionPage() {
     }
   };
 
-  const filteredTopics = topics.filter(topic => 
-    topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    topic.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTopics = topics.filter(
+    (topic) =>
+      topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      topic.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -66,9 +69,9 @@ export default function TopicSelectionPage() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <header className="text-center mb-6 md:mb-8">
-            <img 
-              src={ConvinceMe_logo} 
-              alt="ConvinceMe Logo" 
+            <img
+              src={ConvinceMe_logo}
+              alt="ConvinceMe Logo"
               className="h-16 md:h-20 mx-auto mb-6"
             />
             <h2 className="text-2xl md:text-3xl font-bold text-primary-900 mb-2">
@@ -83,7 +86,7 @@ export default function TopicSelectionPage() {
                 type="text"
                 placeholder="Search topics..."
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
@@ -110,24 +113,28 @@ export default function TopicSelectionPage() {
           ) : (
             <>
               <div className="space-y-3 md:space-y-4 mb-8">
-                {filteredTopics.map(topic => (
+                {filteredTopics.map((topic) => (
                   <div
                     key={topic.id}
                     className={`bg-white rounded-2xl p-4 md:p-6 overflow-hidden transition-all cursor-pointer ${
-                      selectedTopic === topic.id 
-                        ? 'ring-2 ring-primary-500 shadow-xl' 
+                      selectedTopic === topic.id
+                        ? 'ring-2 ring-primary-500 shadow-xl'
                         : 'shadow-soft hover:shadow-lg'
                     }`}
                     onClick={() => setSelectedTopic(topic.id)}
                   >
                     <div className="flex items-center mb-2">
-                      <span className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                        selectedTopic === topic.id
-                          ? 'bg-primary-500 border-primary-500'
-                          : 'border-gray-300'
-                      }`}>
+                      <span
+                        className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                          selectedTopic === topic.id
+                            ? 'bg-primary-500 border-primary-500'
+                            : 'border-gray-300'
+                        }`}
+                      >
                         {selectedTopic === topic.id && (
-                          <span className="flex items-center justify-center h-full text-white text-xs">✓</span>
+                          <span className="flex items-center justify-center h-full text-white text-xs">
+                            ✓
+                          </span>
                         )}
                       </span>
                       <h3 className="text-lg font-bold">{topic.title}</h3>
@@ -139,8 +146,12 @@ export default function TopicSelectionPage() {
 
                     <div className="flex items-center justify-between ml-7">
                       <div className="flex items-center">
-                        <span className="text-sm text-gray-500">Category: </span>
-                        <span className="ml-1 text-sm font-medium text-primary-700">{topic.category}</span>
+                        <span className="text-sm text-gray-500">
+                          Category:{' '}
+                        </span>
+                        <span className="ml-1 text-sm font-medium text-primary-700">
+                          {topic.category}
+                        </span>
                       </div>
                       <div className="flex">
                         <div className="text-xs px-2 py-1 bg-gray-100 rounded text-gray-700">
@@ -180,4 +191,4 @@ export default function TopicSelectionPage() {
       </div>
     </div>
   );
-} 
+}

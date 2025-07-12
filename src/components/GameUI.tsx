@@ -7,7 +7,7 @@ import LoginButton from './LoginButton';
 import WinScreen from './WinScreen';
 import { Transcript } from './TranscriptList';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { useAccount } from '@starknet-react/core';
+import { usePrivy } from '@privy-io/react-auth';
 import websocketService from '../services/websocketService';
 import InactivityModal from './InactivityModal';
 import { IS_GAME_DISABLED } from '../constants';
@@ -21,14 +21,22 @@ interface GameUIProps {
   debateId: string;
 }
 
-export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameUIProps>) {
-  const { address } = useAccount();
+export default function GameUI({
+  side1,
+  side2,
+  topic,
+  debateId,
+}: Readonly<GameUIProps>) {
+  const { user, logout } = usePrivy();
+  const address = user?.id || user?.email?.address || user?.wallet?.address;
   const [debateArguments, setDebateArguments] = useState<Argument[]>([]);
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
   const [showWinScreen, setShowWinScreen] = useState(false);
   const [winnerSide, setWinnerSide] = useState<string>('');
   const [loserSide, setLoserSide] = useState<string>('');
-  const [winnerPlayer, setWinnerPlayer] = useState<{ address: string; email?: string } | undefined>();
+  const [winnerPlayer, setWinnerPlayer] = useState<
+    { address: string; email?: string } | undefined
+  >();
   const { sendMessage, pauseConnection, reconnect } = useWebSocket();
   const [isInactive, setIsInactive] = useState(false);
   const inactivityTimerRef = useRef<number | null>(null);
@@ -96,17 +104,17 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
     };
 
     const handleNewTranscript = (newTranscript: Transcript) => {
-      setTranscripts(prev => [...prev, newTranscript]);
+      setTranscripts((prev) => [...prev, newTranscript]);
     };
 
     // Handle HP/score changes when messages are scored
     const handleGameScore = (gameScore: Record<string, number>) => {
       console.log('Game score updated:', gameScore);
-      
+
       // Check for win condition (HP reaches 0 or below)
       const side1Score = gameScore[side1] ?? 100;
       const side2Score = gameScore[side2] ?? 100;
-      
+
       if (side1Score <= 0 && !showWinScreen) {
         // Side 2 wins (side 1's HP reached 0)
         setWinnerSide(side2);
@@ -245,6 +253,57 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
         />
       )}
 
+      {/* User Info in top left corner */}
+      {user && (
+        <div
+          id="user-info-corner"
+          style={{
+            position: 'fixed',
+            top: 16,
+            left: 16,
+            zIndex: 50,
+            background: 'white',
+            borderRadius: 12,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            padding: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minWidth: 120,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 12,
+              color: '#1e3a8a',
+              textAlign: 'center',
+              fontWeight: 500,
+            }}
+          >
+            {user.email?.address ||
+              user.google?.email ||
+              user.twitter?.username ||
+              user.discord?.username ||
+              user.github?.username ||
+              'User'}
+          </span>
+          <button
+            onClick={logout}
+            style={{
+              fontSize: 10,
+              color: '#6b7280',
+              marginTop: 4,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      )}
+
       {/* QR Code in top right corner */}
       {qrUrl && (
         <div
@@ -318,15 +377,15 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
         {/* Unified Chat - All Messages */}
         <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
           <div className="flex-1 min-h-0">
-            <UnifiedChatList 
-              arguments={debateArguments} 
+            <UnifiedChatList
+              arguments={debateArguments}
               transcripts={transcripts}
-              side1={side1} 
+              side1={side1}
             />
           </div>
 
           <div className="p-3 bg-surface-dark border-t border-gray-100">
-            {!address ? (
+            {!user ? (
               <LoginButton />
             ) : (
               <ArgumentInput
