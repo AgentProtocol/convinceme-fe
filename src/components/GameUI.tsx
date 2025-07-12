@@ -5,6 +5,7 @@ import UnifiedChatList from './UnifiedChatList';
 import ArgumentInput from './ArgumentInput';
 import LoginButton from './LoginButton';
 import WinScreen from './WinScreen';
+import WalletInfo from './WalletInfo';
 import { Transcript } from './TranscriptList';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { usePrivy } from '@privy-io/react-auth';
@@ -314,6 +315,7 @@ export default function GameUI({
               user.github?.username ||
               'User'}
           </span>
+          <WalletInfo />
           <button
             onClick={logout}
             style={{

@@ -260,6 +260,44 @@ export class ContractMeService {
   }
 
   /**
+   * Get wallet balance (CHZ balance)
+   */
+  async getWalletBalance(): Promise<string> {
+    if (!this.provider) {
+      throw new Error('Provider not initialized');
+    }
+
+    try {
+      const provider = new providers.Web3Provider(this.provider);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+      const balance = await provider.getBalance(address);
+      return ethers.utils.formatEther(balance);
+    } catch (error) {
+      console.error('Error getting wallet balance:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get wallet address
+   */
+  async getWalletAddress(): Promise<string> {
+    if (!this.provider) {
+      throw new Error('Provider not initialized');
+    }
+
+    try {
+      const provider = new providers.Web3Provider(this.provider);
+      const signer = provider.getSigner();
+      return await signer.getAddress();
+    } catch (error) {
+      console.error('Error getting wallet address:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get all contract information at once
    */
   async getContractInfo(): Promise<ContractInfo> {
