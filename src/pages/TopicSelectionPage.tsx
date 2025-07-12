@@ -4,6 +4,8 @@ import ConvinceMe_logo from '../assets/ConvinceMe_logo.png';
 import { fetchTopics, createDebate } from '../services/apiService';
 import { Topic } from '../types';
 import { usePrivy } from '@privy-io/react-auth';
+import WalletManager from '../components/WalletManager';
+import ContractMeDisplay from '../components/ContractMeDisplay';
 
 export default function TopicSelectionPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -12,6 +14,8 @@ export default function TopicSelectionPage() {
   const [selectedTopic, setSelectedTopic] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreatingDebate, setIsCreatingDebate] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [showContractInfo, setShowContractInfo] = useState(false);
   const navigate = useNavigate();
   const { user } = usePrivy();
 
@@ -34,6 +38,15 @@ export default function TopicSelectionPage() {
 
     loadTopics();
   }, []);
+
+  const handleWalletReady = (walletAddr: string) => {
+    setWalletAddress(walletAddr);
+  };
+
+  const handleBuyInSuccess = (txHash: string) => {
+    console.log('Buy-in successful:', txHash);
+    // You could add additional logic here, like showing a success message
+  };
 
   const handleCreateDebate = async () => {
     if (!selectedTopic) {
@@ -58,136 +71,129 @@ export default function TopicSelectionPage() {
     }
   };
 
-  const filteredTopics = topics.filter(
-    (topic) =>
-      topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      topic.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTopics = topics.filter((topic) =>
+    topic.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading topics...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-dark to-surface-light py-6 md:py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
-          <header className="text-center mb-6 md:mb-8">
-            <img
-              src={ConvinceMe_logo}
-              alt="ConvinceMe Logo"
-              className="h-16 md:h-20 mx-auto mb-6"
-            />
-            <h2 className="text-2xl md:text-3xl font-bold text-primary-900 mb-2">
-              Select a Debate Topic
-            </h2>
-            <p className="text-sm md:text-base text-gray-600 mb-6">
-              Choose a topic to start a new debate
-            </p>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <img
+            src={ConvinceMe_logo}
+            alt="ConvinceMe"
+            className="h-16 mx-auto mb-4"
+          />
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Choose Your Debate Topic
+          </h1>
+          <p className="text-gray-600">
+            Select a topic to start or join a debate
+          </p>
+        </div>
 
-            <div className="relative max-w-md mx-auto">
-              <input
-                type="text"
-                placeholder="Search topics..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              <button
-                onClick={() => setSearchTerm('')}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 ${!searchTerm && 'hidden'}`}
-              >
-                ✕
-              </button>
-            </div>
-          </header>
-
-          {isLoading ? (
-            <div className="text-center py-8">
-              <p>Loading topics...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-red-500">
-              <p>{error}</p>
-            </div>
-          ) : filteredTopics.length === 0 ? (
-            <div className="text-center py-8">
-              <p>No topics match your search. Try different keywords.</p>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-3 md:space-y-4 mb-8">
-                {filteredTopics.map((topic) => (
-                  <div
-                    key={topic.id}
-                    className={`bg-white rounded-2xl p-4 md:p-6 overflow-hidden transition-all cursor-pointer ${
-                      selectedTopic === topic.id
-                        ? 'ring-2 ring-primary-500 shadow-xl'
-                        : 'shadow-soft hover:shadow-lg'
-                    }`}
-                    onClick={() => setSelectedTopic(topic.id)}
-                  >
-                    <div className="flex items-center mb-2">
-                      <span
-                        className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                          selectedTopic === topic.id
-                            ? 'bg-primary-500 border-primary-500'
-                            : 'border-gray-300'
-                        }`}
-                      >
-                        {selectedTopic === topic.id && (
-                          <span className="flex items-center justify-center h-full text-white text-xs">
-                            ✓
-                          </span>
-                        )}
-                      </span>
-                      <h3 className="text-lg font-bold">{topic.title}</h3>
-                    </div>
-
-                    <p className="text-sm text-gray-600 ml-7 mb-4">
-                      {topic.description}
-                    </p>
-
-                    <div className="flex items-center justify-between ml-7">
-                      <div className="flex items-center">
-                        <span className="text-sm text-gray-500">
-                          Category:{' '}
-                        </span>
-                        <span className="ml-1 text-sm font-medium text-primary-700">
-                          {topic.category}
-                        </span>
-                      </div>
-                      <div className="flex">
-                        <div className="text-xs px-2 py-1 bg-gray-100 rounded text-gray-700">
-                          {topic.agent1_name} vs {topic.agent2_name}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-center">
+        {/* Wallet Section */}
+        <div className="mb-8">
+          <WalletManager onWalletReady={handleWalletReady} />
+          {walletAddress && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-blue-900">
+                  Ready for ContractMe!
+                </h3>
                 <button
-                  onClick={handleCreateDebate}
-                  disabled={!selectedTopic || isCreatingDebate}
-                  className={`px-6 py-3 rounded-lg text-white font-medium transition-all ${
-                    selectedTopic && !isCreatingDebate
-                      ? 'bg-gradient-to-r from-primary-600 to-primary-500 hover:opacity-90'
-                      : 'bg-gray-300 cursor-not-allowed'
-                  }`}
+                  onClick={() => setShowContractInfo(!showContractInfo)}
+                  className="text-blue-600 hover:text-blue-800 underline text-sm"
                 >
-                  {isCreatingDebate ? 'Creating Debate...' : 'Start Debate'}
+                  {showContractInfo ? 'Hide' : 'View'} Contract Info
                 </button>
               </div>
-            </>
+              <p className="text-blue-800 text-sm">
+                Your wallet is connected to Chilliz network. You can now
+                participate in debates with buy-in functionality to contribute
+                to the prize pool.
+              </p>
+            </div>
           )}
+        </div>
 
-          <div className="text-center mt-8">
-            <button
-              onClick={() => navigate('/lobby')}
-              className="text-primary-600 hover:text-primary-800 font-medium"
+        {/* Contract Info */}
+        {showContractInfo && walletAddress && (
+          <div className="mb-8">
+            <ContractMeDisplay onBuyInSuccess={handleBuyInSuccess} />
+          </div>
+        )}
+
+        {/* Search */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search topics..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        {/* Topics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {filteredTopics.map((topic) => (
+            <div
+              key={topic.id}
+              onClick={() => setSelectedTopic(topic.id)}
+              className={`p-6 bg-white rounded-lg shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                selectedTopic === topic.id
+                  ? 'border-2 border-blue-500 shadow-lg'
+                  : 'border border-gray-200'
+              }`}
             >
-              Return to Lobby
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {topic.title}
+              </h3>
+              <p className="text-gray-600 text-sm mb-3">{topic.description}</p>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500">
+                  Category: {topic.category}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {topic.agent1_name} vs {topic.agent2_name}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Create Debate Button */}
+        {selectedTopic && (
+          <div className="text-center">
+            <button
+              onClick={handleCreateDebate}
+              disabled={isCreatingDebate}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            >
+              {isCreatingDebate ? 'Creating Debate...' : 'Create Debate'}
             </button>
           </div>
-        </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
       </div>
     </div>
   );
