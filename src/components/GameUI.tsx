@@ -300,6 +300,39 @@ export default function GameUI({
             minWidth: 120,
           }}
         >
+          {/* Twitter Avatar */}
+          {user.twitter?.username && (
+            <img
+              src={`https://unavatar.io/twitter/${user.twitter.username}`}
+              alt={`@${user.twitter.username} avatar`}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                border: '1px solid #e5e7eb',
+                marginBottom: 4,
+              }}
+              onError={(e) => {
+                // Try fallback URLs
+                const fallbackUrls = [
+                  `https://github.com/${user.twitter?.username}.png`,
+                  `https://ui-avatars.com/api/?name=${user.twitter?.username}&background=1d4ed8&color=fff&size=32`,
+                ];
+
+                const currentSrc = e.currentTarget.src;
+                const currentIndex = fallbackUrls.findIndex((url) =>
+                  currentSrc.includes(url)
+                );
+
+                if (currentIndex < fallbackUrls.length - 1) {
+                  e.currentTarget.src = fallbackUrls[currentIndex + 1];
+                } else {
+                  e.currentTarget.style.display = 'none';
+                }
+              }}
+            />
+          )}
+
           <span
             style={{
               fontSize: 12,
@@ -308,12 +341,13 @@ export default function GameUI({
               fontWeight: 500,
             }}
           >
-            {user.email?.address ||
-              user.google?.email ||
-              user.twitter?.username ||
-              user.discord?.username ||
-              user.github?.username ||
-              'User'}
+            {user.twitter?.username
+              ? `@${user.twitter.username}`
+              : user.email?.address ||
+                user.google?.email ||
+                user.discord?.username ||
+                user.github?.username ||
+                'User'}
           </span>
           <WalletInfo />
           <button

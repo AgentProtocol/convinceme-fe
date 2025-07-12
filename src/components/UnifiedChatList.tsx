@@ -328,7 +328,7 @@ export default function UnifiedChatList({
                   <img
                     src={twitterInfo.avatarUrl}
                     alt={`@${twitterInfo.username} avatar`}
-                    className="w-6 h-6 rounded-full border border-gray-200"
+                    className="w-8 h-8 rounded-full border border-gray-200"
                     onLoad={() => {
                       console.log(
                         'Avatar loaded successfully for:',
