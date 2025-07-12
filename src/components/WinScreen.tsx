@@ -13,10 +13,9 @@ interface WinScreenProps {
   readonly onReturnToLobby: () => void;
   readonly onRestartMatch: () => void;
   readonly side1: string;
-  readonly side2: string;
 }
 
-export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose, onReturnToLobby, onRestartMatch, side1, side2 }: WinScreenProps) {
+export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose, onReturnToLobby, onRestartMatch, side1 }: WinScreenProps) {
   const winnerAvatar = winnerSide === side1 ? agent1Image : agent2Image;
   const [showConfetti, setShowConfetti] = useState(true);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
