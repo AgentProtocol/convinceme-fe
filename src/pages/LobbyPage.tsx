@@ -157,7 +157,7 @@ export default function LobbyPage() {
         setIsLoading(true);
         const response = await fetchDebates();
         // Transform API debates to UI model
-        const uiDebates = response.items.map(debate => ({
+        const uiDebates = (response?.items || []).map(debate => ({
           ...debate,
           side1Avatar: getAvatar(debate.agent1_name),
           side2Avatar: getAvatar(debate.agent2_name)
@@ -230,4 +230,4 @@ export default function LobbyPage() {
       </div>
     </div>
   );
-} 
+}
