@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import websocketService from '../services/websocketService';
+import PrizePoolDisplay from './PrizePoolDisplay';
 
 interface ScoreBarProps {
   // timeLeft: number;
@@ -119,6 +120,7 @@ export default function ScoreBar({
           {topic}
         </div>
       )}
+      <PrizePoolDisplay className="mb-3" />
       {/* <div className="text-center text-xl font-bold mb-3">
         {formatTime(timeLeft)}
       </div> */}
