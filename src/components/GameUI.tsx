@@ -21,14 +21,21 @@ interface GameUIProps {
   debateId: string;
 }
 
-export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameUIProps>) {
+export default function GameUI({
+  side1,
+  side2,
+  topic,
+  debateId,
+}: Readonly<GameUIProps>) {
   const { address } = useAccount();
   const [debateArguments, setDebateArguments] = useState<Argument[]>([]);
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);
   const [showWinScreen, setShowWinScreen] = useState(false);
   const [winnerSide, setWinnerSide] = useState<string>('');
   const [loserSide, setLoserSide] = useState<string>('');
-  const [winnerPlayer, setWinnerPlayer] = useState<{ address: string; email?: string } | undefined>();
+  const [winnerPlayer, setWinnerPlayer] = useState<
+    { address: string; email?: string } | undefined
+  >();
   const { sendMessage, pauseConnection, reconnect } = useWebSocket();
   const [isInactive, setIsInactive] = useState(false);
   const inactivityTimerRef = useRef<number | null>(null);
@@ -96,17 +103,17 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
     };
 
     const handleNewTranscript = (newTranscript: Transcript) => {
-      setTranscripts(prev => [...prev, newTranscript]);
+      setTranscripts((prev) => [...prev, newTranscript]);
     };
 
     // Handle HP/score changes when messages are scored
     const handleGameScore = (gameScore: Record<string, number>) => {
       console.log('Game score updated:', gameScore);
-      
+
       // Check for win condition (HP reaches 0 or below)
       const side1Score = gameScore[side1] ?? 100;
       const side2Score = gameScore[side2] ?? 100;
-      
+
       if (side1Score <= 0 && !showWinScreen) {
         // Side 2 wins (side 1's HP reached 0)
         setWinnerSide(side2);
@@ -232,6 +239,11 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
     window.location.href = '/';
   };
 
+  const handleRestartMatch = () => {
+    // Navigate to topic selection page to start a new debate
+    window.location.href = '/topics';
+  };
+
   return (
     <div className="h-full max-w-5xl mx-auto flex flex-col">
       {/* Win Screen Modal */}
@@ -242,6 +254,9 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
           winnerPlayer={winnerPlayer}
           onClose={handleCloseWinScreen}
           onReturnToLobby={handleReturnToLobby}
+          onRestartMatch={handleRestartMatch}
+          side1={side1}
+          side2={side2}
         />
       )}
 
@@ -318,10 +333,10 @@ export default function GameUI({ side1, side2, topic, debateId }: Readonly<GameU
         {/* Unified Chat - All Messages */}
         <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
           <div className="flex-1 min-h-0">
-            <UnifiedChatList 
-              arguments={debateArguments} 
+            <UnifiedChatList
+              arguments={debateArguments}
               transcripts={transcripts}
-              side1={side1} 
+              side1={side1}
             />
           </div>
 

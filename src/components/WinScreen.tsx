@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import agent1Image from '../assets/agent1.png';
+import agent2Image from '../assets/agent2.png';
 
 interface WinScreenProps {
   readonly winnerSide: string;
@@ -9,9 +11,13 @@ interface WinScreenProps {
   };
   readonly onClose: () => void;
   readonly onReturnToLobby: () => void;
+  readonly onRestartMatch: () => void;
+  readonly side1: string;
+  readonly side2: string;
 }
 
-export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose, onReturnToLobby }: WinScreenProps) {
+export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose, onReturnToLobby, onRestartMatch, side1, side2 }: WinScreenProps) {
+  const winnerAvatar = winnerSide === side1 ? agent1Image : agent2Image;
   const [showConfetti, setShowConfetti] = useState(true);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   
@@ -86,17 +92,26 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
       )}
 
       <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center transform animate-in zoom-in-95 duration-300">
-        {/* Trophy Icon */}
-        <div className="text-6xl mb-4">🏆</div>
+        {/* Winner Avatar */}
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <img 
+              src={winnerAvatar} 
+              alt={`${winnerSide} avatar`}
+              className="w-24 h-24 rounded-full object-cover border-4 border-yellow-400 shadow-lg"
+            />
+            <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-lg">🏆</div>
+          </div>
+        </div>
         
         {/* Winner Announcement */}
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Debate Complete!
+          Victory!
         </h1>
         
         <div className="mb-6">
           <div className="text-xl font-semibold text-emerald-600 mb-2">
-            🎉 {winnerSide} Wins! 🎉
+            {winnerSide} Wins!
           </div>
           <div className="text-sm text-gray-600 mb-3">
             Better luck next time, {loserSide}
@@ -132,6 +147,13 @@ export default function WinScreen({ winnerSide, loserSide, winnerPlayer, onClose
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
+          <button
+            onClick={onRestartMatch}
+            className="w-full px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 active:bg-emerald-800 transition-colors font-medium shadow-sm"
+          >
+            Start New Debate
+          </button>
+          
           <button
             onClick={onReturnToLobby}
             className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-colors font-medium shadow-sm"
