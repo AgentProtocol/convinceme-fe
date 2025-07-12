@@ -22,7 +22,6 @@ export default function ArgumentInput({
   const [currentCost, setCurrentCost] = useState<string>('0');
   const [isLoadingCost, setIsLoadingCost] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const { createContractMeService, isWalletReady } = useContractMeService();
   const address = user?.id || user?.email?.address || user?.wallet?.address;
@@ -53,7 +52,6 @@ export default function ArgumentInput({
 
     setIsSubmitting(true);
     setError(null);
-    setSuccess(null);
 
     try {
       // First, perform the buy-in
@@ -62,8 +60,7 @@ export default function ArgumentInput({
         throw new Error('Wallet service not available');
       }
 
-      const txHash = await service.buyIn();
-      setSuccess(`Buy-in successful! Transaction: ${txHash}`);
+      await service.buyIn();
 
       // Then submit the argument to the debate system
       onSubmit(newArgument, selectedSide);
@@ -71,9 +68,6 @@ export default function ArgumentInput({
 
       // Refresh the cost for next argument
       await loadCurrentCost();
-
-      // Clear success message after a delay
-      setTimeout(() => setSuccess(null), 5000);
     } catch (err) {
       console.error('Error submitting argument:', err);
       setError(
@@ -84,7 +78,7 @@ export default function ArgumentInput({
     }
   };
 
-  // Separate disabled states for input vs buttons
+  // Separate disabled states for input vs buttons (this is the key fix)
   const isInputDisabled =
     disabled || isSubmitting || IS_GAME_DISABLED || !isWalletReady;
 
@@ -100,21 +94,14 @@ export default function ArgumentInput({
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
       <h3 className="text-lg font-semibold mb-4">Submit Your Argument</h3>
 
-      {/* Buy-in Cost Display */}
-      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-blue-900">
-            Current Buy-in Cost:
-          </span>
-          <span className="text-lg font-bold text-blue-800">
-            {isLoadingCost ? 'Loading...' : escrowUtils.formatCHZ(currentCost)}
-          </span>
+      {/* Minimal cost display */}
+      {isWalletReady && (
+        <div className="mb-3 text-sm text-gray-600">
+          Cost:{' '}
+          {isLoadingCost ? 'Loading...' : escrowUtils.formatCHZ(currentCost)}{' '}
+          CHZ
         </div>
-        <p className="text-xs text-blue-600 mt-1">
-          This amount will be deducted from your wallet when you submit your
-          argument
-        </p>
-      </div>
+      )}
 
       {/* Argument Input */}
       <div className="mb-4">
@@ -126,13 +113,6 @@ export default function ArgumentInput({
           rows={4}
           disabled={isInputDisabled}
         />
-      </div>
-
-      {/* Character count */}
-      <div className="mb-4 text-right">
-        <span className="text-sm text-gray-500">
-          {newArgument.length} characters
-        </span>
       </div>
 
       {/* Side Selection Buttons */}
@@ -158,32 +138,23 @@ export default function ArgumentInput({
         </button>
       </div>
 
-      {/* Status Messages */}
+      {/* Minimal error display */}
       {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 text-sm">{error}</p>
+        <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+          {error}
         </div>
       )}
 
-      {success && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800 text-sm">{success}</p>
-        </div>
-      )}
-
-      {/* Wallet Status */}
+      {/* Minimal status messages */}
       {!isWalletReady && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-yellow-800 text-sm">
-            Please connect your wallet to submit arguments
-          </p>
+        <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+          Connecting wallet...
         </div>
       )}
 
-      {/* Game Status */}
       {IS_GAME_DISABLED && (
-        <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-gray-800 text-sm">Game is currently disabled</p>
+        <div className="mt-3 p-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-800">
+          Game is currently disabled
         </div>
       )}
     </div>
