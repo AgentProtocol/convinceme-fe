@@ -99,7 +99,6 @@ export default function ArgumentInput({
         <div className="mb-3 text-sm text-gray-600">
           Cost:{' '}
           {isLoadingCost ? 'Loading...' : escrowUtils.formatCHZ(currentCost)}{' '}
-          CHZ
         </div>
       )}
 
@@ -120,7 +119,7 @@ export default function ArgumentInput({
         <button
           onClick={() => handleSubmit(side1)}
           disabled={isButtonDisabled}
-          className="flex flex-col items-center justify-center p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex flex-col items-center justify-center p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="text-sm">Support</span>
           <span className="font-bold">{side1}</span>

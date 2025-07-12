@@ -113,7 +113,7 @@ export default function ScoreBar({
   const scorePercentage = (side1Score / (side1Score + side2Score)) * 100;
 
   return (
-    <div className={`py-2 ${className} relative`}>
+    <div className={`py-2 px-4 ${className} relative w-full`}>
       {topic && (
         <div className="text-center text-base font-bold text-gray-800 mb-2">
           {topic}

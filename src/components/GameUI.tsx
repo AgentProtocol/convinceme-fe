@@ -266,7 +266,7 @@ export default function GameUI({
   };
 
   return (
-    <div className="h-full max-w-5xl mx-auto flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Win Screen Modal */}
       {showWinScreen && (
         <WinScreen
@@ -331,13 +331,13 @@ export default function GameUI({
         </div>
       )}
 
-      {/* QR Code in top right corner */}
+      {/* QR Code in bottom right corner */}
       {qrUrl && (
         <div
           id="qr-code-corner"
           style={{
             position: 'fixed',
-            top: 16,
+            bottom: 16,
             right: 16,
             zIndex: 50,
             background: 'white',
@@ -395,7 +395,7 @@ export default function GameUI({
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col gap-3 min-h-0">
+      <div className="flex-1 flex flex-col gap-3 min-h-0 max-w-5xl mx-auto w-full">
         {/* Sides Display */}
         <div className="bg-surface-light rounded-xl shadow-soft p-3">
           <AudioPlayer side1={side1} side2={side2} />
