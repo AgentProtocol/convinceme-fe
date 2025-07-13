@@ -10,12 +10,12 @@ import scientist1Avatar from '../assets/scientist1.svg';
 import scientist2Avatar from '../assets/scientist2.svg';
 import environmentalistAvatar from '../assets/environmentalist.svg';
 import engineerAvatar from '../assets/engineer.svg';
-import agent1Image from '../assets/agent1.png';
-import agent2Image from '../assets/agent2.png';
+import messiGif from '../assets/messi.gif';
+import ronaldoGif from '../assets/ronaldo.gif';
 
 const defaultAvatars = {
-  'default1': agent1Image,
-  'default2': agent2Image,
+  'default1': messiGif,
+  'default2': ronaldoGif,
   'chef1': chef1Avatar,
   'chef2': chef2Avatar,
   'scientist1': scientist1Avatar,
@@ -98,7 +98,7 @@ function DebatePreview({ debate, isFirst }: { debate: DebateUI, isFirst?: boolea
               <img 
                 src={debate.side1Avatar} 
                 alt={debate.agent1_name} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
             <div className={`text-sm font-medium text-center ${debate.status === 'active' ? 'text-blue-700' : 'text-gray-500'}`}>
@@ -115,7 +115,7 @@ function DebatePreview({ debate, isFirst }: { debate: DebateUI, isFirst?: boolea
               <img 
                 src={debate.side2Avatar} 
                 alt={debate.agent2_name} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
             <div className={`text-sm font-medium text-center ${debate.status === 'active' ? 'text-red-700' : 'text-gray-500'}`}>

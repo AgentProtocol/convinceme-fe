@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import websocketService from '../services/websocketService';
 import SideAvatar from './SideAvatar';
-import agent1Image from '../assets/agent1.png';
-import agent1Gif from '../assets/agent1.gif';
-import agent2Image from '../assets/agent2.png';
-import agent2Gif from '../assets/agent2.gif';
+import messiGif from '../assets/messi.gif';
+import ronaldoGif from '../assets/ronaldo.gif';
 
 interface AudioMessage {
   audioPath: string;
@@ -99,8 +97,7 @@ export default function SideAvatarPlayer({ side, side1, side2 }: SideAvatarPlaye
   }, [side1, side2]);
 
   const isLeftSide = side === side1;
-  const avatarImage = isLeftSide ? agent1Image : agent2Image;
-  const avatarGif = isLeftSide ? agent1Gif : agent2Gif;
+  const avatarGif = isLeftSide ? messiGif : ronaldoGif;
   const color = isLeftSide ? 'blue' : 'red';
 
   return (
@@ -108,7 +105,7 @@ export default function SideAvatarPlayer({ side, side1, side2 }: SideAvatarPlaye
       <audio ref={audioRef} style={{ display: 'none' }} />
       <SideAvatar
         name={side}
-        imageStill={avatarImage}
+        imageStill={avatarGif}
         imageTalking={avatarGif}
         color={color}
         isActive={isPlaying && currentSpeaker === side}

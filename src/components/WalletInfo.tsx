@@ -101,7 +101,21 @@ export default function WalletInfo({ className = '' }: WalletInfoProps) {
           gap: 4,
         }}
       >
-        <span>{truncateAddress(walletAddress)}</span>
+        <span
+          onClick={copyToClipboard}
+          style={{
+            cursor: 'pointer',
+            padding: '2px 4px',
+            borderRadius: 3,
+            transition: 'background-color 0.2s',
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
+          title={copySuccess ? 'Copied!' : 'Click to copy wallet address'}
+        >
+          {truncateAddress(walletAddress)}
+        </span>
         <button
           onClick={copyToClipboard}
           style={{

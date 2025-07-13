@@ -111,7 +111,7 @@ export default function Leaderboard({ debateId, side1 }: LeaderboardProps) {
 
   if (loading) {
     return (
-      <div className="bg-surface-light rounded-xl p-4 shadow-soft">
+      <div className="bg-surface-light rounded-xl p-4 shadow-soft h-full flex items-center justify-center">
         <div className="text-center text-text-muted">
           Loading leaderboard...
         </div>
@@ -121,17 +121,19 @@ export default function Leaderboard({ debateId, side1 }: LeaderboardProps) {
 
   if (leaderboard.length === 0) {
     return (
-      <div className="bg-surface-light rounded-xl p-4 shadow-soft">
+      <div className="bg-surface-light rounded-xl p-4 shadow-soft h-full flex flex-col">
         <h3 className="text-lg font-semibold text-text-primary mb-2">
           Top Arguments
         </h3>
-        <div className="text-center text-text-muted">No arguments yet</div>
+        <div className="flex-1 flex items-center justify-center text-text-muted">
+          No arguments yet
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-surface-light rounded-xl p-4 shadow-soft">
+    <div className="bg-surface-light rounded-xl p-4 shadow-soft h-full flex flex-col">
       <h3 className="text-lg font-semibold text-text-primary mb-4">
         🏆 Top Arguments
       </h3>
@@ -142,7 +144,7 @@ export default function Leaderboard({ debateId, side1 }: LeaderboardProps) {
         </div>
       )}
 
-      <div className="space-y-2 max-h-64 overflow-y-auto">
+      <div className="space-y-2 flex-1 overflow-y-auto">
         {leaderboard.map((argument, index) => (
           <div
             key={argument.id}
@@ -162,7 +164,7 @@ export default function Leaderboard({ debateId, side1 }: LeaderboardProps) {
                   {argument.player_id}
                 </span>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full ${
+                  className={`text-xs px-2 py-0.5 rounded-full text-center ${
                     argument.side === side1
                       ? 'bg-blue-100 text-blue-800'
                       : 'bg-purple-100 text-purple-800'

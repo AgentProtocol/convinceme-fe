@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import agent1Image from '../assets/agent1.png';
-import agent2Image from '../assets/agent2.png';
+import messiGif from '../assets/messi.gif';
+import ronaldoGif from '../assets/ronaldo.gif';
 
 interface WinScreenProps {
   readonly winnerSide: string;
@@ -24,7 +24,7 @@ export default function WinScreen({
   onRestartMatch,
   side1,
 }: WinScreenProps) {
-  const winnerAvatar = winnerSide === side1 ? agent1Image : agent2Image;
+  const winnerAvatar = winnerSide === side1 ? messiGif : ronaldoGif;
   const [showConfetti, setShowConfetti] = useState(true);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
@@ -97,7 +97,7 @@ export default function WinScreen({
             <img
               src={winnerAvatar}
               alt={`${winnerSide} avatar`}
-              className="w-24 h-24 rounded-full object-cover border-4 border-yellow-400 shadow-lg"
+              className="w-24 h-24 rounded-full object-contain border-4 border-yellow-400 shadow-lg"
             />
             <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-lg">
               🏆

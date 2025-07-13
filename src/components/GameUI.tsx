@@ -44,6 +44,9 @@ export default function GameUI({
   const inactivityTimerRef = useRef<number | null>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [feedbackQrUrl, setFeedbackQrUrl] = useState<string | null>(null);
+  const [showUserPanel, setShowUserPanel] = useState(false);
+  const [showQrPanel, setShowQrPanel] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -179,6 +182,43 @@ export default function GameUI({
   }, [debateId]);
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (
+        showUserPanel &&
+        !target.closest('#user-panel') &&
+        !target.closest('#user-toggle')
+      ) {
+        setShowUserPanel(false);
+      }
+      if (
+        showQrPanel &&
+        !target.closest('#qr-panel') &&
+        !target.closest('#qr-toggle')
+      ) {
+        setShowQrPanel(false);
+      }
+    };
+
+    if (isMobile && (showUserPanel || showQrPanel)) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isMobile, showUserPanel, showQrPanel]);
+
+  useEffect(() => {
     const debateUrl = `${window.location.origin}/debate/${debateId}`;
     QRCode.toDataURL(
       debateUrl,
@@ -282,8 +322,122 @@ export default function GameUI({
         />
       )}
 
-      {/* User Info in top left corner */}
-      {user && (
+      {/* Mobile Toggle Buttons */}
+      {isMobile && (
+        <>
+          {/* Mobile Control Buttons */}
+          <div className="fixed top-4 left-4 z-50 flex gap-2">
+            {/* User Panel Toggle */}
+            {user && (
+              <button
+                id="user-toggle"
+                onClick={() => setShowUserPanel(!showUserPanel)}
+                className="bg-white rounded-full p-2 shadow-lg"
+              >
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  {user.twitter?.username?.[0]?.toUpperCase() || 'U'}
+                </div>
+              </button>
+            )}
+
+            {/* QR Panel Toggle */}
+            {qrUrl && (
+              <button
+                id="qr-toggle"
+                onClick={() => setShowQrPanel(!showQrPanel)}
+                className="bg-white rounded-full p-2 shadow-lg"
+              >
+                <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs">
+                  QR
+                </div>
+              </button>
+            )}
+          </div>
+
+          {/* User Panel */}
+          {showUserPanel && user && (
+            <div
+              id="user-panel"
+              className="fixed top-16 left-4 z-40 bg-white rounded-xl shadow-lg p-4 max-w-xs"
+            >
+              {user.twitter?.username && (
+                <img
+                  src={`https://unavatar.io/twitter/${user.twitter.username}`}
+                  alt={`@${user.twitter.username} avatar`}
+                  className="w-12 h-12 rounded-full border mx-auto mb-2"
+                  onError={(e) => {
+                    const fallbackUrls = [
+                      `https://github.com/${user.twitter?.username}.png`,
+                      `https://ui-avatars.com/api/?name=${user.twitter?.username}&background=1d4ed8&color=fff&size=48`,
+                    ];
+                    const currentSrc = e.currentTarget.src;
+                    const currentIndex = fallbackUrls.findIndex((url) =>
+                      currentSrc.includes(url)
+                    );
+                    if (currentIndex < fallbackUrls.length - 1) {
+                      e.currentTarget.src = fallbackUrls[currentIndex + 1];
+                    } else {
+                      e.currentTarget.style.display = 'none';
+                    }
+                  }}
+                />
+              )}
+              <div className="text-center text-sm text-blue-600 font-medium mb-2">
+                {user.twitter?.username
+                  ? `@${user.twitter.username}`
+                  : user.email?.address ||
+                    user.google?.email ||
+                    user.discord?.username ||
+                    user.github?.username ||
+                    'User'}
+              </div>
+              <WalletInfo />
+              <button
+                onClick={logout}
+                className="w-full mt-2 text-xs text-gray-500 underline"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+
+          {/* QR Panel */}
+          {showQrPanel && qrUrl && (
+            <div
+              id="qr-panel"
+              className="fixed top-16 left-4 z-40 bg-white rounded-xl shadow-lg p-4"
+            >
+              <img
+                src={qrUrl}
+                alt="QR code for this page"
+                width={96}
+                height={96}
+                className="mb-2"
+              />
+              <div className="text-xs text-blue-600 text-center font-medium mb-4">
+                Scan to play
+              </div>
+              {feedbackQrUrl && (
+                <>
+                  <img
+                    src={feedbackQrUrl}
+                    alt="Feedback QR code"
+                    width={96}
+                    height={96}
+                    className="mb-2"
+                  />
+                  <div className="text-xs text-blue-600 text-center font-medium">
+                    Feedback
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Desktop User Info */}
+      {!isMobile && user && (
         <div
           id="user-info-corner"
           style={{
@@ -301,7 +455,6 @@ export default function GameUI({
             minWidth: 120,
           }}
         >
-          {/* Twitter Avatar */}
           {user.twitter?.username && (
             <img
               src={`https://unavatar.io/twitter/${user.twitter.username}`}
@@ -314,17 +467,14 @@ export default function GameUI({
                 marginBottom: 4,
               }}
               onError={(e) => {
-                // Try fallback URLs
                 const fallbackUrls = [
                   `https://github.com/${user.twitter?.username}.png`,
                   `https://ui-avatars.com/api/?name=${user.twitter?.username}&background=1d4ed8&color=fff&size=32`,
                 ];
-
                 const currentSrc = e.currentTarget.src;
                 const currentIndex = fallbackUrls.findIndex((url) =>
                   currentSrc.includes(url)
                 );
-
                 if (currentIndex < fallbackUrls.length - 1) {
                   e.currentTarget.src = fallbackUrls[currentIndex + 1];
                 } else {
@@ -333,7 +483,6 @@ export default function GameUI({
               }}
             />
           )}
-
           <span
             style={{
               fontSize: 12,
@@ -368,8 +517,8 @@ export default function GameUI({
         </div>
       )}
 
-      {/* QR Code in bottom right corner */}
-      {qrUrl && (
+      {/* Desktop QR Code */}
+      {!isMobile && qrUrl && (
         <div
           id="qr-code-corner"
           style={{
@@ -422,56 +571,131 @@ export default function GameUI({
           )}
         </div>
       )}
+
       <InactivityModal isOpen={isInactive} onResume={handleResumeGame} />
 
-      <ScoreBar
-        side1={side1}
-        side2={side2}
-        topic={topic}
-        className="shrink-0"
-      />
+      {isMobile ? (
+        /* Mobile Layout - Vertical Stack */
+        <div className="flex-1 flex flex-col p-2 gap-3 overflow-auto">
+          {/* Topic Title */}
+          {topic && (
+            <div className="text-center text-xl font-bold text-gray-800 px-4 py-2">
+              {topic}
+            </div>
+          )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex gap-3 min-h-0 max-w-7xl mx-auto w-full">
-        {/* Left Avatar */}
-        <div className="w-32 flex-shrink-0">
-          <SideAvatarPlayer side={side1} side1={side1} side2={side2} />
-        </div>
+          {/* Prize Pool */}
+          <div className="px-4">
+            <ScoreBar
+              side1={side1}
+              side2={side2}
+              topic={undefined}
+              className=""
+            />
+          </div>
 
-        {/* Center Content */}
-        <div className="flex-1 flex flex-col gap-3 min-h-0">
-          {/* Leaderboard */}
-          <Leaderboard debateId={debateId} side1={side1} />
+          {/* Speaking Avatars */}
+          <div className="flex justify-between items-center px-8 py-2">
+            <div className="flex-1 max-w-[120px]">
+              <SideAvatarPlayer side={side1} side1={side1} side2={side2} />
+            </div>
+            <div className="flex-1 max-w-[120px]">
+              <SideAvatarPlayer side={side2} side1={side1} side2={side2} />
+            </div>
+          </div>
 
-          {/* Unified Chat - All Messages */}
-          <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
-            <div className="flex-1 min-h-0">
-              <UnifiedChatList
-                arguments={debateArguments}
-                transcripts={transcripts}
-                side1={side1}
-              />
+          {/* Main Content - Leaderboard and Chat */}
+          <div className="flex-1 flex flex-col gap-3 min-h-0">
+            {/* Top Arguments (Leaderboard) */}
+            <div className="flex-[4] min-h-[500px]">
+              <div className="h-full bg-surface-light rounded-xl shadow-soft">
+                <Leaderboard debateId={debateId} side1={side1} />
+              </div>
             </div>
 
-            <div className="p-3 bg-surface-dark border-t border-gray-100">
-              {!user ? (
-                <LoginButton />
-              ) : (
-                <ArgumentInput
-                  onSubmit={handleSendArgument}
-                  side1={side1}
-                  side2={side2}
-                />
-              )}
+            {/* Chat */}
+            <div className="flex-[2] min-h-[600px]">
+              <div className="h-full bg-surface-light rounded-xl shadow-soft flex flex-col">
+                <div className="flex-1 min-h-[150px]">
+                  <UnifiedChatList
+                    arguments={debateArguments}
+                    transcripts={transcripts}
+                    side1={side1}
+                  />
+                </div>
+                <div className="p-3 bg-surface-dark border-t border-gray-100">
+                  {!user ? (
+                    <LoginButton />
+                  ) : (
+                    <ArgumentInput
+                      onSubmit={handleSendArgument}
+                      side1={side1}
+                      side2={side2}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      ) : (
+        /* Desktop Layout - Original */
+        <>
+          {/* ScoreBar with Avatars on sides */}
+          <div className="flex items-center gap-4 max-w-7xl mx-auto w-full">
+            <div className="w-32 flex-shrink-0">
+              <SideAvatarPlayer side={side1} side1={side1} side2={side2} />
+            </div>
+            <div className="flex-1">
+              <ScoreBar
+                side1={side1}
+                side2={side2}
+                topic={topic}
+                className="shrink-0"
+              />
+            </div>
+            <div className="w-32 flex-shrink-0">
+              <SideAvatarPlayer side={side2} side1={side1} side2={side2} />
+            </div>
+          </div>
 
-        {/* Right Avatar */}
-        <div className="w-32 flex-shrink-0">
-          <SideAvatarPlayer side={side2} side1={side1} side2={side2} />
-        </div>
-      </div>
+          {/* Main Content */}
+          <div className="flex-1 flex gap-3 min-h-0 max-w-7xl mx-auto w-full">
+            {/* Left Side - Leaderboard (30%) */}
+            <div className="w-[30%] flex-shrink-0 flex flex-col">
+              <div className="flex-1">
+                <Leaderboard debateId={debateId} side1={side1} />
+              </div>
+            </div>
+
+            {/* Right Side - Chat (70%) */}
+            <div className="flex-1 flex flex-col gap-3 min-h-0">
+              {/* Unified Chat - All Messages */}
+              <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
+                <div className="flex-1 min-h-0">
+                  <UnifiedChatList
+                    arguments={debateArguments}
+                    transcripts={transcripts}
+                    side1={side1}
+                  />
+                </div>
+
+                <div className="p-3 bg-surface-dark border-t border-gray-100">
+                  {!user ? (
+                    <LoginButton />
+                  ) : (
+                    <ArgumentInput
+                      onSubmit={handleSendArgument}
+                      side1={side1}
+                      side2={side2}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
