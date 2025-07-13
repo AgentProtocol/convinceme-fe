@@ -131,6 +131,13 @@ class WebSocketService extends EventEmitter {
               this.emit('game_score', data.gameScore);
               break;
 
+            case 'leaderboard_update':
+              this.emit('leaderboard_update', {
+                debate_id: data.debate_id,
+                leaderboard: data.leaderboard,
+              });
+              break;
+
             case 'pong':
               this.pongReceived = true;
               break;

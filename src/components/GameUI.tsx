@@ -6,6 +6,7 @@ import ArgumentInput from './ArgumentInput';
 import LoginButton from './LoginButton';
 import WinScreen from './WinScreen';
 import WalletInfo from './WalletInfo';
+import Leaderboard from './Leaderboard';
 import { Transcript } from './TranscriptList';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { usePrivy } from '@privy-io/react-auth';
@@ -439,15 +440,18 @@ export default function GameUI({
 
         {/* Center Content */}
         <div className="flex-1 flex flex-col gap-3 min-h-0">
+          {/* Leaderboard */}
+          <Leaderboard debateId={debateId} side1={side1} />
+
           {/* Unified Chat - All Messages */}
           <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
-          <div className="flex-1 min-h-0">
-            <UnifiedChatList
-              arguments={debateArguments}
-              transcripts={transcripts}
-              side1={side1}
-            />
-          </div>
+            <div className="flex-1 min-h-0">
+              <UnifiedChatList
+                arguments={debateArguments}
+                transcripts={transcripts}
+                side1={side1}
+              />
+            </div>
 
             <div className="p-3 bg-surface-dark border-t border-gray-100">
               {!user ? (
