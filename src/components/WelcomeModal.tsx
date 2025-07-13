@@ -25,9 +25,8 @@ const steps = [
 ]
 
 const mechanics = [
-  "Each argument requires a buy-in paid in ETH (starting at $1 USD equivalent)",
-  "Buy-in increases by ~4.2% with each submitted argument",
-  "Game runs on a 1-hour countdown, reset by each new argument",
+  "Each argument requires a small buy-in paid in CHZ (Chiliz Token)",
+  "The buy-in slightly increases with each submitted argument",
   "The highest-scored argument on the winning side receives the prize pool",
   "A progress bar at the top shows the current winning side in real-time"
 ]
