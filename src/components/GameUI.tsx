@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import AudioPlayer from './AudioPlayer';
+import SideAvatarPlayer from './SideAvatarPlayer';
 import ScoreBar from './ScoreBar';
 import UnifiedChatList from './UnifiedChatList';
 import ArgumentInput from './ArgumentInput';
@@ -395,14 +395,16 @@ export default function GameUI({
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col gap-3 min-h-0 max-w-5xl mx-auto w-full">
-        {/* Sides Display */}
-        <div className="bg-surface-light rounded-xl shadow-soft p-3">
-          <AudioPlayer side1={side1} side2={side2} />
+      <div className="flex-1 flex gap-3 min-h-0 max-w-7xl mx-auto w-full">
+        {/* Left Avatar */}
+        <div className="w-32 flex-shrink-0">
+          <SideAvatarPlayer side={side1} side1={side1} side2={side2} isLeft={true} />
         </div>
 
-        {/* Unified Chat - All Messages */}
-        <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
+        {/* Center Content */}
+        <div className="flex-1 flex flex-col gap-3 min-h-0">
+          {/* Unified Chat - All Messages */}
+          <div className="flex-1 bg-surface-light rounded-xl shadow-soft flex flex-col min-h-0">
           <div className="flex-1 min-h-0">
             <UnifiedChatList
               arguments={debateArguments}
@@ -411,17 +413,23 @@ export default function GameUI({
             />
           </div>
 
-          <div className="p-3 bg-surface-dark border-t border-gray-100">
-            {!user ? (
-              <LoginButton />
-            ) : (
-              <ArgumentInput
-                onSubmit={handleSendArgument}
-                side1={side1}
-                side2={side2}
-              />
-            )}
+            <div className="p-3 bg-surface-dark border-t border-gray-100">
+              {!user ? (
+                <LoginButton />
+              ) : (
+                <ArgumentInput
+                  onSubmit={handleSendArgument}
+                  side1={side1}
+                  side2={side2}
+                />
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Right Avatar */}
+        <div className="w-32 flex-shrink-0">
+          <SideAvatarPlayer side={side2} side1={side1} side2={side2} isLeft={false} />
         </div>
       </div>
     </div>

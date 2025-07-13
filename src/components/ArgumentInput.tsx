@@ -91,14 +91,14 @@ export default function ArgumentInput({
     !isWalletReady;
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold mb-4">Submit Your Argument</h3>
-
+    <div>
       {/* Minimal cost display */}
       {isWalletReady && (
         <div className="mb-3 text-sm text-gray-600">
           Cost:{' '}
-          {isLoadingCost ? 'Loading...' : escrowUtils.formatCHZ(currentCost)}{' '}
+          {isLoadingCost
+            ? 'Loading...'
+            : escrowUtils.formatCHZ(currentCost)}{' '}
         </div>
       )}
 
@@ -108,8 +108,8 @@ export default function ArgumentInput({
           value={newArgument}
           onChange={(e) => setNewArgument(e.target.value)}
           placeholder="Enter your argument here..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          rows={4}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-transparent resize-none"
+          rows={2}
           disabled={isInputDisabled}
         />
       </div>

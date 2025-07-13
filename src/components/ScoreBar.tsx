@@ -115,7 +115,7 @@ export default function ScoreBar({
   return (
     <div className={`py-2 px-4 ${className} relative w-full`}>
       {topic && (
-        <div className="text-center text-base font-bold text-gray-800 mb-2">
+        <div className="text-center text-2xl font-bold text-gray-800 mb-2">
           {topic}
         </div>
       )}

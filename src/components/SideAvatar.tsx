@@ -43,6 +43,7 @@ export default function SideAvatar({
         <div className={`
           text-base md:text-lg lg:text-xl 
           font-bold 
+          text-center
           ${colorClasses}
           ${isHit ? 'animate-[shake_0.8s_ease-in-out]' : ''}
         `}>
@@ -51,4 +52,4 @@ export default function SideAvatar({
       </div>
     </div>
   );
-} 
+}
