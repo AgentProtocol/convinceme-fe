@@ -15,10 +15,9 @@ interface SideAvatarPlayerProps {
   side: string;
   side1: string;
   side2: string;
-  isLeft: boolean;
 }
 
-export default function SideAvatarPlayer({ side, side1, side2, isLeft }: SideAvatarPlayerProps) {
+export default function SideAvatarPlayer({ side, side1, side2 }: SideAvatarPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioQueue = useRef<AudioMessage[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);

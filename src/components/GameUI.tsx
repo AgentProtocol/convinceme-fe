@@ -398,7 +398,7 @@ export default function GameUI({
       <div className="flex-1 flex gap-3 min-h-0 max-w-7xl mx-auto w-full">
         {/* Left Avatar */}
         <div className="w-32 flex-shrink-0">
-          <SideAvatarPlayer side={side1} side1={side1} side2={side2} isLeft={true} />
+          <SideAvatarPlayer side={side1} side1={side1} side2={side2} />
         </div>
 
         {/* Center Content */}
@@ -429,7 +429,7 @@ export default function GameUI({
 
         {/* Right Avatar */}
         <div className="w-32 flex-shrink-0">
-          <SideAvatarPlayer side={side2} side1={side1} side2={side2} isLeft={false} />
+          <SideAvatarPlayer side={side2} side1={side1} side2={side2} />
         </div>
       </div>
     </div>
