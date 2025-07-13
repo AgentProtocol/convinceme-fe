@@ -91,15 +91,14 @@ export default function ArgumentInput({
     !isWalletReady;
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold mb-4">Submit Your Argument</h3>
-
+    <div>
       {/* Minimal cost display */}
       {isWalletReady && (
         <div className="mb-3 text-sm text-gray-600">
           Cost:{' '}
-          {isLoadingCost ? 'Loading...' : escrowUtils.formatCHZ(currentCost)}{' '}
-          CHZ
+          {isLoadingCost
+            ? 'Loading...'
+            : escrowUtils.formatCHZ(currentCost)}{' '}
         </div>
       )}
 
@@ -109,8 +108,8 @@ export default function ArgumentInput({
           value={newArgument}
           onChange={(e) => setNewArgument(e.target.value)}
           placeholder="Enter your argument here..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          rows={4}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-transparent resize-none"
+          rows={2}
           disabled={isInputDisabled}
         />
       </div>
@@ -120,7 +119,7 @@ export default function ArgumentInput({
         <button
           onClick={() => handleSubmit(side1)}
           disabled={isButtonDisabled}
-          className="flex flex-col items-center justify-center p-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex flex-col items-center justify-center p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="text-sm">Support</span>
           <span className="font-bold">{side1}</span>
