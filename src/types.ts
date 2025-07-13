@@ -40,7 +40,11 @@ export interface Argument {
   debate_id: string;
   created_at: string;
   score?: ArgumentScore;
-} 
+  upvotes: number;
+  downvotes: number;
+  vote_score: number;
+  user_vote?: string; // Current user's vote on this argument
+}
 
 export interface Pagination {
   has_next: boolean;
